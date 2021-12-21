@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html lang="en-GB">
+<head>
+	<meta charset="utf-8">
+	<title>Capital Punishment</title>
+
+	<!--Libraries-->
+    <script type = "module" src="libs/phaser.js"></script>
+	<script type = "module" src="https://randojs.com/2.0.0.js"></script>
+</head>
+	<style>
+		body {
+			padding: 0;
+			margin: 0;
+			background-color: #000000;
+		}
+	</style>
+</head>
+<body>
+</body>
+
+
+
+
+	<!--Procedural Level Generator-->
+	<script src="/walkergeneration/WalkerC.js"></script>
+    <script src="/walkergeneration/WalkerListC.js"></script>
+    <script src="/walkergeneration/WorldGeneratorC.js"></script>
+
+
+	<!--Classes-->
+	<script src="classes/weaponC.js"></script>
+	<script src="classes/bulletC.js"></script>
+	<script src="classes/weaponPickups.js"></script>
+	<script src="classes/playerC.js"></script>
+	
+
+
+	<!--Game Script-->
+    <script type="module" src="main.js"></script>
+
+
+</html>
