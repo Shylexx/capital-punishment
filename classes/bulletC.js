@@ -10,7 +10,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
         this.setVisible(true);
         this.setScale(1, 1, true);
         this.type = "standard";
-        this.bounces = 0;
+        this.bounced = false;
     }//end of constructor
 
     fire(weapon, world){
@@ -38,21 +38,13 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
     }// end up updateBullet()
 
     bulletDie(){
-        console.log("Bullet Died");
         this.disableBody(true, true);
+        this.bounced = false;
     }
 
     bulletHitWall(){
-        console.log("Bullet Hit Wall");
         this.bulletDie();
     }
 
-    /* bounceBulletHitWall(){
-        console.log("Bouncing Bullet hit wall");
-        this.bounces++
-        if(this.bounces > 3){
-            this.bulletDie();
-        }
-    } */
 
 }

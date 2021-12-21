@@ -82,12 +82,11 @@ export class Pistol extends Weapon{
         var bullet = world.bulletGroup.get()
         if(bullet){
             bullet.fire(this, world);
-            bullet.setBodySize(0.5,0.5);
+
 
             //Bullet Collide with Walls
-            scene.physics.add.collider(bullet, world.wallBorderLayer, bullet.bulletHitWall, null, bullet);
             scene.physics.add.collider(bullet, world.wallLayer, bullet.bulletHitWall, null, bullet);
-            scene.physics.add.collider(bullet, world.wallTopLayer, bullet.bulletHitWall, null, bullet);
+            
             scene.cameras.main.shake(this.weaponVars.fireRate/2, 0.001, true);
         }
         this.weaponVars.lastFired = scene.time.now;
@@ -113,13 +112,12 @@ export class Rifle extends Weapon{
         var bullet = world.bulletGroup.get().setActive(true).setVisible(true);
         if(bullet){
             bullet.fire(this, world);
-            bullet.setBodySize(0.5, 0.5);
             bullet.body.bounce.set(1);
             
             //Bullet Collide with Walls
-            scene.physics.add.collider(bullet, world.wallBorderLayer, bullet.bulletHitWall, null, bullet);
+
             scene.physics.add.collider(bullet, world.wallLayer, bullet.bulletHitWall, null, bullet);
-            scene.physics.add.collider(bullet, world.wallTopLayer, bullet.bulletHitWall, null, bullet);
+
 
             scene.cameras.main.shake(this.weaponVars.fireRate/2, 0.001, true);
         }

@@ -18,10 +18,9 @@ let world = {
     wallTiles: null,
 
     levelAry: null,
+
     groundLayer: null,
     wallLayer: null,
-    wallBorderLayer: null,
-    wallTopLayer: null,
     aboveLayer: null,
 
     player_spr: null,
@@ -299,35 +298,30 @@ function buildWorld(scene, world) {
     // set up the tilemap layers
     world.groundLayer = world.map.createLayer(0, world.bgTileSet, 0, 0);
     world.wallLayer = world.map.createBlankLayer('wallLayer', world.wallTiles, 0, 0);
-    world.wallBorderLayer = world.map.createBlankLayer('wallBorderLayer', world.wallTiles, 0, 0);
-    world.wallTopLayer = world.map.createBlankLayer('wallTopLayer', world.wallTiles, 0, 0);
 
     for(let x = 0; x < WorldGenerator.roomWidth; x++){
         for( let y = 0; y < WorldGenerator.roomHeight; y++){
             if(WorldGenerator.genData.l1walker_ary[x][y] == 1){
                 world.wallLayer.putTileAt(1, x, y);
             } else if (WorldGenerator.genData.l1walker_ary[x][y]== 2){
-                world.wallTopLayer.putTileAt(2, x, y);
+                world.wallLayer.putTileAt(2, x, y);
             } else if (WorldGenerator.genData.l1walker_ary[x][y]== 3){
-                world.wallBorderLayer.putTileAt(1, x, y);
+                world.wallLayer.putTileAt(1, x, y);
             } else if(WorldGenerator.genData.l1walker_ary[x][y]== 4){
-                world.wallBorderLayer.putTileAt(1, x, y);
+                world.wallLayer.putTileAt(1, x, y);
             }
             
 
         }
     }
 
-        world.wallLayer.setDepth(6);
-        world.wallBorderLayer.setDepth(4);
-        world.wallTopLayer.setDepth(3);
+        world.wallLayer.setDepth(2);
+
 
 
 
     //enable collision handling in blockLayer
     world.wallLayer.setCollision([0, 1, 2, 3, 4], true);
-    world.wallBorderLayer.setCollision([0, 1, 2, 3, 4], true);
-    world.wallTopLayer.setCollision([0, 1, 2, 3 ,4], true);
 
 
     
@@ -357,8 +351,8 @@ function update(time) {
     world.player_spr.weapon.curWeapon.updateMe(this,world);
 
     //Update non current weapon location
-    //world.player_spr.weapon.nonCurWeapon.x = world.player_spr.x - 2;
-    //world.player_spr.weapon.nonCurWeapon.y = world.player_spr.y;
+    world.player_spr.weapon.nonCurWeapon.x = world.player_spr.x - 2;
+    world.player_spr.weapon.nonCurWeapon.y = world.player_spr.y;
 
 
     updateCamera(this);
