@@ -14,10 +14,9 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
     }//end of constructor
 
     fire(weapon, world){
-        this.setPosition(weapon.x, weapon.y-5); // Initial position
+        this.enableBody(true, weapon.x, weapon.y-5, true, true);
+        this.setBodySize(0.5,0.5);
         this.setScale(0.7);
-        this.setActive(true)
-        this.setVisible(true);
         this.setRotation(Phaser.Math.Angle.Between(world.player_spr.x, world.player_spr.y, world.reticle_spr.x, world.reticle_spr.y));
         this.direction = Math.atan( (world.reticle_spr.x-this.x) / (world.reticle_spr.y-this.y));
 
@@ -40,10 +39,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
 
     bulletDie(){
         console.log("Bullet Died");
-        this.setActive(false);
-        this.setVisible(false);
-        this.setVelocity(0,0);
-
+        this.disableBody(true, true);
     }
 
     bulletHitWall(){
