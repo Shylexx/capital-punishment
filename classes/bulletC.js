@@ -9,59 +9,54 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
         this.setActive(true);
         this.setVisible(true);
         this.setScale(1, 1, true);
+        this.type = "standard";
+        this.bounces = 0;
     }//end of constructor
 
-    fire(shooter, world){
-        this.setPosition(shooter.x, shooter.y-5); // Initial position
+    fire(weapon, world){
+        this.setPosition(weapon.x, weapon.y-5); // Initial position
         this.setScale(0.7);
         this.setActive(true)
         this.setVisible(true);
         this.setRotation(Phaser.Math.Angle.Between(world.player_spr.x, world.player_spr.y, world.reticle_spr.x, world.reticle_spr.y));
         this.direction = Math.atan( (world.reticle_spr.x-this.x) / (world.reticle_spr.y-this.y));
 
-        // Calculate X and y velocity of bullet to moves it from shooter to reticle
+        // Calculate X and y velocity of bullet to moves it from weapon to reticle
         if (world.reticle_spr.y >= this.y)
         {
-            //this.xSpeed = this.speed*Math.sin(this.direction);
-            //this.ySpeed = this.speed*Math.cos(this.direction);
             this.setVelocity((this.speed+world.player_spr.stats.weaponShotSpeed)*Math.sin(this.direction),(this.speed+world.player_spr.stats.weaponShotSpeed)*Math.cos(this.direction));
         }
         else
         {
-            //this.xSpeed = -this.speed*Math.sin(this.direction);
-            //this.ySpeed = -this.speed*Math.cos(this.direction);
             this.setVelocity((-this.speed-world.player_spr.stats.weaponShotSpeed)*Math.sin(this.direction),(-this.speed-world.player_spr.stats.weaponShotSpeed)*Math.cos(this.direction));
         }
 
-        //this.rotation = shooter.rotation; // angle bullet with shooters rotation
         this.born = 0; // Time since new bullet spawned
     }//end of fire()
 
     update(time, delta){
-        /* this.x += this.xSpeed * delta;
-        this.y += this.ySpeed * delta;
-        this.born += delta; */
-        //this.body.reset();
-        if (this.born > 1800)
-        {
-            this.setActive(false);
-            this.setVisible(false);
-        }
+
     }// end up updateBullet()
 
     bulletDie(){
-        console.log("Bullet Died F1");
-        //this.setActive(false);
-        //this.setVisible(false);
+        console.log("Bullet Died");
+        this.setActive(false);
+        this.setVisible(false);
+        this.setVelocity(0,0);
+
     }
-    bulletDie2(){
-        console.log("Bullet Died F2");
-        //this.setActive(false);
-        //this.setVisible(false);
+
+    bulletHitWall(){
+        console.log("Bullet Hit Wall");
+        this.bulletDie();
     }
-    bulletDie3(){
-        console.log("Bullet Died F3");
-        /* this.setActive(false);
-        this.setVisible(false); */
-    }
+
+    /* bounceBulletHitWall(){
+        console.log("Bouncing Bullet hit wall");
+        this.bounces++
+        if(this.bounces > 3){
+            this.bulletDie();
+        }
+    } */
+
 }

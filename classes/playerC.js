@@ -32,6 +32,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.facing = null;
         this.idle = true;
 
+        
+
 
     
         // had to do this to create a physics body

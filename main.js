@@ -108,7 +108,6 @@ function updateCamera(scene){
     midPointX = midPointX + world.player_spr.x;
     midPointY = midPointY + world.player_spr.y;
 
-    //scene.cameras.main.centerOn(midPointX, midPointY);
 
      //Move Camera to goal (midpoint of player and reticle) over time. Smooth movement
     scene.cameras.main.centerOn(scene.cameras.main.midPoint.x + 0.1 * (midPointX-scene.cameras.main.midPoint.x), scene.cameras.main.midPoint.y + 0.1 * (midPointY-scene.cameras.main.midPoint.y));
@@ -175,6 +174,9 @@ function create() {
     world.player_spr = new Player(this, world.spawnPosX, world.spawnPosY, 'janitor');
     world.player_spr.setScale(1.2);
     world.player_spr.setDepth(3);
+    world.player_spr.setBodySize(0.5, 0.5);
+
+
     world.reticle_spr =  this.physics.add.sprite(world.spawnPosX, world.spawnPosY, 'reticle');
     world.reticle_spr.setDepth(10);
 
@@ -203,7 +205,7 @@ function create() {
     this.physics.add.collider(world.player_spr, world.groundLayer);
     this.physics.add.collider(world.player_spr, world.wallBorderLayer);
     this.physics.add.collider(world.player_spr, world.wallTopLayer);
-    world.player_spr.body.setSize(0.5, 0.5);
+    
 
     //Creating Camera and having it follow the player
     //this.cameras.main.startFollow(world.player_spr, true, 0.1, 0.1);
@@ -290,11 +292,10 @@ function buildWorld(scene, world) {
         data: WorldGenerator.genData.l1backg_ary , tileWidth: 32, tileHeight: 32
     });
 
-    //world.bgTileSet = world.map.addTilesetImage('tiles');
-    //world.tileSet = world.map.addTilesetImage('items');
+    //Add TileSets
     world.wallTiles = world.map.addTilesetImage('walls','walls', 32, 32, 1, 4);
     world.bgTileSet = world.map.addTilesetImage('bgtiles', 'bgtiles', 32, 32, 1, 4);
-    //world.tileSet = world.map.addTilesetImage('mountain_landscape', 'gameTiles');
+
     // set up the tilemap layers
     world.groundLayer = world.map.createLayer(0, world.bgTileSet, 0, 0);
     world.wallLayer = world.map.createBlankLayer('wallLayer', world.wallTiles, 0, 0);
@@ -355,11 +356,10 @@ function update(time) {
     //Update Current Weapon
     world.player_spr.weapon.curWeapon.updateMe(this,world);
 
-    //Update non Equipped weapon
+    //Update non current weapon location
     //world.player_spr.weapon.nonCurWeapon.x = world.player_spr.x - 2;
-    //  world.player_spr.weapon.nonCurWeapon.y = world.player_spr.y;
+    //world.player_spr.weapon.nonCurWeapon.y = world.player_spr.y;
 
-    //world.player_spr.weapon.nonCurWeapon.MoveTo();
 
     updateCamera(this);
     
