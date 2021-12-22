@@ -2,8 +2,9 @@
 
 import {Player} from "./classes/playerC.js";
 import { WalkerGen } from "./procedural/worldgenerator.js";
-import {Pistol, Rifle} from "./classes/weaponC.js";
-import {Bullet} from "./classes/bulletC.js"
+import * as WepSys from "./classes/weaponC.js";
+import {Bullet} from "./classes/bulletC.js";
+import * as Enemy from "./classes/enemyC.js";
 
 
 let world = {
@@ -185,19 +186,19 @@ function create() {
     world.bulletGroup.setY(world.spawnPosY);
 
     //Add Default Weapon
-    world.player_spr.weapon.offWeapon = new Pistol(this, world.spawnPosX, world.spawnPosY);
+    world.player_spr.weapon.offWeapon = new WepSys.Pistol(this, world.spawnPosX, world.spawnPosY);
     world.player_spr.weapon.curWeapon = world.player_spr.weapon.offWeapon;
     world.player_spr.weapon.offWeapon.setInInv();
     world.player_spr.weapon.curWeapon.setDepth(6);
     world.player_spr.weapon.curWeapon.weaponVars.curWeapon = true;
-    world.player_spr.weapon.mainWeapon = new Rifle(this, world.spawnPosX, world.spawnPosY);
+    world.player_spr.weapon.mainWeapon = new WepSys.Rifle(this, world.spawnPosX, world.spawnPosY);
     world.player_spr.weapon.mainWeapon.setInInv();
     world.player_spr.weapon.nonCurWeapon = world.player_spr.weapon.mainWeapon;
 
 
     window['gun'] = world.player_spr.weapon.offWeapon;
 
-    var testGun = new Rifle(this, world.spawnPosX + 50, world.spawnPosY);
+    var testGun = new WepSys.Rifle(this, world.spawnPosX + 50, world.spawnPosY);
 
     //Adding Collider for Checking walls
     this.physics.add.collider(world.player_spr, world.wallLayer);
