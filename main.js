@@ -2,17 +2,23 @@
 
 import {Player} from "./classes/playerC.js";
 import { WalkerGen } from "./procedural/worldgenerator.js";
+import {LevelGen} from "./procedural/levelgenerator.js";
 import * as WepSys from "./classes/weaponC.js";
 import {Bullet} from "./classes/bulletC.js";
 import * as Enemy from "./classes/enemyC.js";
 
+let gameVars = {
+    curLevel: null,
+    difficulty: null,
+    score: null,
+    enemyAry: [],
+
+}
 
 let world = {
     health_txt: null,
     moveKeys: null,
     map: null,
-
-    keyD: null,
 
     bgTileSet: null,
     tileset: null,
@@ -56,6 +62,7 @@ let config = {
 
 let game = new Phaser.Game(config);
 let WorldGenerator = new WalkerGen((world.ROWS/2),(world.COLUMNS/2));
+let LevelGenerator = new LevelGen(this, world);
 
 
 // Ensures reticle does not move offscreen and further than max dist(radius) from player
@@ -113,8 +120,6 @@ function updateCamera(scene){
     scene.cameras.main.centerOn(scene.cameras.main.midPoint.x + 0.1 * (midPointX-scene.cameras.main.midPoint.x), scene.cameras.main.midPoint.y + 0.1 * (midPointY-scene.cameras.main.midPoint.y));
     
 }
-
-
 
 function preload() {
 
@@ -344,8 +349,10 @@ function update(time) {
     constrainReticle(this, world.reticle_spr); 
 
     //make reticle move with player
-    world.reticle_spr.setVelocityX(world.player_spr.body.velocity.x);
-    world.reticle_spr.setVelocityY(world.player_spr.body.velocity.y);
+    if(world.player_spr.body.blocked.none) {
+        world.reticle_spr.setVelocityX(world.player_spr.body.velocity.x);
+        world.reticle_spr.setVelocityY(world.player_spr.body.velocity.y);
+    }
 
 
     //Update Current Weapon
