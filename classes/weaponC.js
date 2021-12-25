@@ -79,7 +79,7 @@ export class Pistol extends Weapon{
     if (scene.time.now > this.weaponVars.lastFired + this.weaponVars.fireRate - world.player_spr.stats.weaponFireRate){
         console.log("Fired Pistol");
 
-        var bullet = world.bulletGroup.get()
+        var bullet = world.player_spr.weapon.bulletGroup.get()
         if(bullet){
             bullet.fire(this, world);
 
@@ -109,7 +109,7 @@ export class Rifle extends Weapon{
     fire(scene, world){
         console.log("Fired Rifle")
 
-        var bullet = world.bulletGroup.get().setActive(true).setVisible(true);
+        var bullet = world.player_spr.weapon.bulletGroup.get()
         if(bullet){
             bullet.fire(this, world);
             bullet.body.bounce.set(1);

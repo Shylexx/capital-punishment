@@ -19,6 +19,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         mainAmmo: null,
         offAmmo: null,
         firing: null,
+
+        bulletGroup: null,
     }
 
     items = {
@@ -32,10 +34,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.facing = null;
         this.idle = true;
 
+            //Create Bullet Group
+        this.weapon.bulletGroup = this.physics.add.group({classType: Bullet, runChildUpdate: true});
+        this.weapon.bulletGroup.setX(world.spawnPosX);
+        this.weapon.bulletGroup.setY(world.spawnPosY);
+
         
-
-
-    
         // had to do this to create a physics body
         scene.physics.add.existing(this);
         //set up the physics properties

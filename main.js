@@ -32,7 +32,6 @@ let world = {
 
     player_spr: null,
     reticle_spr: null,
-    bulletGroup: null,
 
     COLUMNS: 50,
     ROWS: 50,
@@ -167,7 +166,8 @@ function create() {
     //Create World
     WorldGenerator.genWorld(world);
     WorldGenerator.makeSpawnPos(world);
-    buildWorld(this, world);
+    buildMap(this, world);
+    LevelGenerator.populateLevel();
     
     // add camera
     this.cameras.main.setBounds(0, 0, world.map.widthInPixels, world.map.heightInPixels);
@@ -185,10 +185,7 @@ function create() {
     world.reticle_spr =  this.physics.add.sprite(world.spawnPosX, world.spawnPosY, 'reticle');
     world.reticle_spr.setDepth(10);
 
-    //Create Bullet Group
-    world.bulletGroup = this.physics.add.group({classType: Bullet, runChildUpdate: true});
-    world.bulletGroup.setX(world.spawnPosX);
-    world.bulletGroup.setY(world.spawnPosY);
+
 
     //Add Default Weapon
     world.player_spr.weapon.offWeapon = new WepSys.Pistol(this, world.spawnPosX, world.spawnPosY);
@@ -281,7 +278,7 @@ function create() {
 } // create()
 
 
-function buildWorld(scene, world) {
+function buildMap(scene, world) {
     /*
     * Layer Depth Reference
     * Ground Layer: Default
@@ -338,7 +335,7 @@ function buildWorld(scene, world) {
         font: '34px Arial',
         fill: '#fff'
     }).setScrollFactor(0);
-} //end of buildWorld()
+} //end of buildMap()
 
 
 function update(time) {
