@@ -4,9 +4,10 @@ import {Player} from "./classes/playerC.js";
 import { WalkerGen } from "./procedural/worldgenerator.js";
 import {LevelGen} from "./procedural/levelgenerator.js";
 import * as WepSys from "./classes/weaponC.js";
-import {Bullet} from "./classes/bulletC.js";
-import * as Enemy from "./classes/enemyC.js";
-import {WeaponPickup} from "./classes/weaponPickups.js";
+
+//import {Bullet} from "./classes/bulletC.js";
+//import * as Enemy from "./classes/enemyC.js";
+//import {WeaponPickup} from "./classes/weaponPickups.js";
 
 let gameVars = {
     curLevel: null,
@@ -42,6 +43,7 @@ let world = {
 }; // end of world
 
 let config = {
+    // eslint-disable-next-line no-undef
     type: Phaser.AUTO,
     width: 1280, // Canvas width in pixels
     height:960, // Canvas height in pixels
@@ -60,7 +62,7 @@ let config = {
     }
 };
 
-let game = new Phaser.Game(config);
+
 let WorldGenerator = new WalkerGen((world.ROWS/2),(world.COLUMNS/2));
 let LevelGenerator = new LevelGen(this, world);
 
@@ -168,7 +170,7 @@ function create() {
     WorldGenerator.genWorld(world);
     WorldGenerator.makeSpawnPos(world);
     buildMap(this, world);
-    LevelGenerator.populateLevel(scene, world, gameVars);
+    LevelGenerator.populateLevel(this, world, gameVars);
     
     // add camera
     this.cameras.main.setBounds(0, 0, world.map.widthInPixels, world.map.heightInPixels);
@@ -239,7 +241,7 @@ function create() {
 
     // Locks pointer on mousedown
     //Fires Weapon with Mousedown
-    this.input.on('pointerdown', (pointer) => {
+    this.input.on('pointerdown', () => {
         if(game.input.mouse.locked != true){
             game.input.mouse.requestPointerLock();
         }
@@ -251,14 +253,14 @@ function create() {
     });
 
     //Stops firing on mouseup
-    this.input.on('pointerup',  (pointer) => {
+    this.input.on('pointerup',  () => {
         world.player_spr.stopFiring();
         
 
     });
 
     // Exit pointer lock when G or escape (by default) is pressed.
-    this.input.keyboard.on('keydown-G', function (event) {
+    this.input.keyboard.on('keydown-G', function () {
         if (game.input.mouse.locked)
             game.input.mouse.releasePointerLock();
     }, 0, this);
@@ -344,7 +346,7 @@ function buildMap(scene, world) {
 } //end of buildMap()
 
 
-function update(time) {
+function update() {
     world.player_spr.updatePlayer(world);
 
 
@@ -373,4 +375,5 @@ function update(time) {
     
 } // end of update()
 
-
+// eslint-disable-next-line no-undef
+let game = new Phaser.Game(config);
