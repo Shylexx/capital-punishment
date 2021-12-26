@@ -6,6 +6,7 @@ import {LevelGen} from "./procedural/levelgenerator.js";
 import * as WepSys from "./classes/weaponC.js";
 import {Bullet} from "./classes/bulletC.js";
 import * as Enemy from "./classes/enemyC.js";
+import {WeaponPickup} from "./classes/weaponPickups.js";
 
 let gameVars = {
     curLevel: null,
@@ -49,7 +50,7 @@ let config = {
         default: 'arcade',
         arcade: {
             debug: false,
-            //fixedStep: false,
+            pixelArt: true,
         }
     },
     scene: {
@@ -167,7 +168,7 @@ function create() {
     WorldGenerator.genWorld(world);
     WorldGenerator.makeSpawnPos(world);
     buildMap(this, world);
-    LevelGenerator.populateLevel();
+    LevelGenerator.populateLevel(scene, world, gameVars);
     
     // add camera
     this.cameras.main.setBounds(0, 0, world.map.widthInPixels, world.map.heightInPixels);
@@ -220,6 +221,10 @@ function create() {
 
         event.stopPropagation();
 
+        if(world.player_spr.overlapping != false){
+            world.player_spr.pickupWeapon();
+        }
+
     });
 
     //Q Key down for swapping weapons
@@ -229,6 +234,7 @@ function create() {
 
         world.player_spr.swapWeapons();
     });
+
 
 
     // Locks pointer on mousedown
@@ -340,6 +346,8 @@ function buildMap(scene, world) {
 
 function update(time) {
     world.player_spr.updatePlayer(world);
+
+
     // reset the player motion
     //world.player_spr.setVelocity(0);
 

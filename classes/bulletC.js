@@ -33,9 +33,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
         this.born = 0; // Time since new bullet spawned
     }//end of fire()
 
-    update(time, delta){
 
-    }// end up updateBullet()
 
     bulletDie(){
         this.disableBody(true, true);

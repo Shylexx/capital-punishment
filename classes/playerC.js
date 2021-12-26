@@ -1,3 +1,5 @@
+import { WeaponPickup } from "./weaponPickups";
+
 export class Player extends Phaser.Physics.Arcade.Sprite {
     stats = {
         //Basic Stats
@@ -29,13 +31,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     constructor(scene, xPos, yPos, texture) {
         super(scene, xPos, yPos, texture);
-        this.score = 0;
+
         this.cursorPos = null;
+        this.overlapping = false;
         this.facing = null;
         this.idle = true;
 
             //Create Bullet Group
-        this.weapon.bulletGroup = this.physics.add.group({classType: Bullet, runChildUpdate: true});
+        this.weapon.bulletGroup = this.physics.add.group({classType: Bullet, runChildUpdate: false});
         this.weapon.bulletGroup.setX(world.spawnPosX);
         this.weapon.bulletGroup.setY(world.spawnPosY);
 
@@ -63,6 +66,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             this.flipX = false;
             this.facing = "right";
         }
+        
 
         // Check the keys and update movement if required
         this.play('idle2', true);
@@ -84,6 +88,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             
         }
 
+        //If currently on a weapon pickup, check for when we leave the pickup
+        if(this.overlapping != false){
+            this.overlapping.checkEndOverlap(this);
+        }
+
     
     }
 
@@ -91,58 +100,73 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     
     //movement methods
     moveLeft() {
-        //this.anims.play('walkLeft',true);
+        //this.anims.play('walkLeft',true)
         this.setVelocityX(-150);
-        //this.x -= 1;
+        //this.x -= 1
     } // end of moveLeft()
 
     moveRight() {
-        //this.anims.play('walkRight',true);
+        //this.anims.play('walkRight',true)
         this.setVelocityX(150);
-        //this.x += 1;
+        //this.x += 1
     } // end of moveRight()
 
     moveUp() {
-       // this.anims.play('walkUp',true);
+       // this.anims.play('walkUp',true)
         this.setVelocityY(-150);
-        //this.y -= 1;
+        //this.y -= 1
     } // end of moveUp()
     moveDown() {
-        //this.anims.play('walkDown', true);
+        //this.anims.play('walkDown', true)
         this.setVelocityY(150);
-        //this.y += 1;
+        //this.y += 1
     } // end of moveDown()
 
     standStill() {
-       // this.setFrame(0);
+       // this.setFrame(0)
         this.setVelocity(0, 0)
 
     } //end of standStill()
 
-    pickupWeapon(newWep){
-        if (newWep.weaponVars.weaponType == "main"){
-            if(this.weapon.curWeapon == this.weapon.mainWeapon){
-                this.weapon.curWeapon = newWep;
-            }
-            this.weapon.mainWeapon.setDropped();
-            this.weapon.mainWeapon = newWep;
-            this.weapon.mainWeapon.setInInv();
+
+    pickupWeapon(){
+
+        var pickup = this.overlapping;
+
+        if (pickup.weaponStored.weaponVars.weaponType == "main"){
+            //Create Pickup Of Dropped Weapon
+            this.scene.add.existing(new WeaponPickup(this.scene, this.x, this.y, this.weapon.mainWeapon, this));
             
-        } else {
-            if(this.weapon.curWeapon == this.weapon.offWeapon){
-                this.weapon.curWeapon = newWep;
-            } else{
-                this.weapon.nonCurWeapon = newWep;
+            //Add Weapon to Player
+            if(this.weapon.curWeapon == this.weapon.mainWeapon){
+                this.weapon.curWeapon = pickup.weaponStored;
             }
-            this.weapon.offWeapon.setDropped();
-            this.weapon.offWeapon = newWep;
-            this.weapon.offWeapon.setInInv();
+            this.weapon.mainWeapon = pickup.weaponStored;
+
+            //Destroy Pickup
+            pickup.disableBody(true, true).destroy();
+
+            
+            
+        } else if (pickup.weaponStored.weaponVars.weaponType == "off") {
+            //Create Pickup Of Dropped Weapon
+            this.scene.add.existing(new WeaponPickup(this.scene, this.x, this.y, this.weapon.offWeapon));
+            
+            //Add Weapon to Player
             if(this.weapon.curWeapon == this.weapon.offWeapon){
-                this.weapon.curWeapon = newWep;
+                this.weapon.curWeapon = pickup.weaponStored;
             }
+            this.weapon.offWeapon = pickup.weaponStored;
+
+            //Destroy Pickup
+            pickup.disableBody(true, true).destroy();
         }
         
         
+    }
+
+    clearOverlap(){
+        this.overlapping = false;
     }
 
     fireWeapon(scene, world){

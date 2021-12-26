@@ -22,9 +22,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
-    updateEnemy(scene, world){
-        
-    }
 
 }
 
