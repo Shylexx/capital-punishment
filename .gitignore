@@ -1,2 +1,5 @@
 capitalpunishment.code-workspace
-node_modules/.bin/acorn.cmd
+node_modules/
+.eslintrc.js
+package-lock.json
+package.json
