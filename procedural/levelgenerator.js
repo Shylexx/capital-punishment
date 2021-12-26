@@ -1,6 +1,7 @@
 export class LevelGen {
     constructor(scene, world){
-
+        this.scene = scene;
+        this.world = world;
     }
 
     populateLevel(){
@@ -18,6 +19,10 @@ export class LevelGen {
     }
 
     addDetail(){
+
+    }
+
+    makeEnemySpawns(){
 
     }
 

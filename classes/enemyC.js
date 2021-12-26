@@ -3,6 +3,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         super(scene, xPos, yPos, texture);
         this.awake = false;
         this.wakeRadius = null;
+        this.speed = null;
         
     }
 
@@ -21,19 +22,30 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
+    updateEnemy(scene, world){
+        
+    }
+
 }
 
 export class Grunt extends Enemy {
     constructor(scene, xPos, yPos, texture){
         super(scene, xPos, yPos, texture);
         this.awake = false;
+        this.speed = 10;
     }
 
     updateEnemy(scene, world){
         if(this.awake == false){
             this.checkWakeRadius(world);
         } else {
-            
+
+            //Basic chase, move in straight line toward enemy.
+            var dirX = world.player_spr.x - this.x;
+            var dirY = world.player_spr.y = this.y;
+
+            this.setVelocityX(Math.sign(dirX) * this.speed);
+            this.setVelocityY(Math.sign(dirY) * this.speed);
         }
     }
 }
