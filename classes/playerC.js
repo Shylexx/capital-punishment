@@ -1,4 +1,5 @@
-import { WeaponPickup } from "./weaponPickups";
+import { WeaponPickup } from "./weaponPickups.js";
+import { Bullet } from "./bulletC.js";
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
     stats = {
@@ -38,9 +39,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.idle = true;
 
             //Create Bullet Group
-        this.weapon.bulletGroup = this.physics.add.group({classType: Bullet, runChildUpdate: false});
-        this.weapon.bulletGroup.setX(world.spawnPosX);
-        this.weapon.bulletGroup.setY(world.spawnPosY);
+        this.weapon.bulletGroup = scene.physics.add.group({classType: Bullet, runChildUpdate: false});
+        this.weapon.bulletGroup.setX(xPos);
+        this.weapon.bulletGroup.setY(yPos);
 
         
         // had to do this to create a physics body
