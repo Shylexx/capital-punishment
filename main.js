@@ -4,6 +4,7 @@ import {Player} from "./classes/playerC.js";
 import { WalkerGen } from "./procedural/worldgenerator.js";
 import {LevelGen} from "./procedural/levelgenerator.js";
 import * as WepSys from "./classes/weaponC.js";
+import { WeaponPickup } from "./classes/weaponPickups.js";
 
 //import {Bullet} from "./classes/bulletC.js";
 //import * as Enemy from "./classes/enemyC.js";
@@ -51,7 +52,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false,
+            debug: true,
             pixelArt: true,
         }
     },
@@ -203,7 +204,11 @@ function create() {
 
     window['gun'] = world.player_spr.weapon.offWeapon;
 
-    var testGun = new WepSys.Rifle(this, world.spawnPosX + 50, world.spawnPosY);
+    console.log(world.player_spr);
+
+    //var testGun = new WepSys.Rifle(this, world.spawnPosX + 50, world.spawnPosY);
+
+    var testDrop = new WeaponPickup(this, world.spawnPosX + 50, world.spawnPosY, WepSys.Pistol, world, 'rifle');
 
     //Adding Collider for Checking walls
     this.physics.add.collider(world.player_spr, world.wallLayer);

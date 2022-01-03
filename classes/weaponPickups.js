@@ -1,13 +1,16 @@
+import * as WepSys from "./weaponC.js";
 export class WeaponPickup extends Phaser.Physics.Arcade.Sprite{
-    constructor(scene, x, y, weaponTemplate, player_spr){
-        super(scene, x, y, weaponTemplate.texture.key);
+    constructor(scene, x, y, weaponTemplate, world, texture){
+        super(scene, x, y, texture);
         this.weaponStored = weaponTemplate;
 
         this.rotation = Math.floor(Math.random() * 360);
 
         scene.physics.add.existing(this);
 
-        scene.physics.add.overlap(this, player_spr, function () { overlapPlayer(player_spr) })
+        this.setBounce(0);
+
+        scene.physics.add.overlap(this, world.player_spr, this.overlapPlayer, null, this);
 
         scene.add.existing(this);
 
@@ -16,10 +19,11 @@ export class WeaponPickup extends Phaser.Physics.Arcade.Sprite{
     }
 
     overlapPlayer(player){
-        if (player.overlapping == false){
+         if (player.overlapping == null){
         player.overlapping = this;
         console.log("Overlapped Pickup: " +this.weaponStored.weaponVars.name);
-        }
+        } 
+        console.log("Overlapped");
     }
 
     //Only Run if This is currently overlapped pickup

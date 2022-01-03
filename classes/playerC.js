@@ -34,7 +34,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         super(scene, xPos, yPos, texture);
 
         this.cursorPos = null;
-        this.overlapping = false;
+        this.overlapping = null;
         this.facing = null;
         this.idle = true;
 
