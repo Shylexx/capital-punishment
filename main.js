@@ -4,7 +4,7 @@ import {Player} from "./classes/playerC.js";
 import { WalkerGen } from "./procedural/worldgenerator.js";
 import {LevelGen} from "./procedural/levelgenerator.js";
 import * as WepSys from "./classes/weaponC.js";
-import { WeaponPickup } from "./classes/weaponPickups.js";
+import * as WepPickup from "./classes/weaponPickups.js";
 
 //import {Bullet} from "./classes/bulletC.js";
 //import * as Enemy from "./classes/enemyC.js";
@@ -197,9 +197,9 @@ function create() {
     world.player_spr.weapon.offWeapon.setInInv();
     world.player_spr.weapon.curWeapon.setDepth(6);
     world.player_spr.weapon.curWeapon.weaponVars.curWeapon = true;
-    world.player_spr.weapon.mainWeapon = new WepSys.Rifle(this, world.spawnPosX, world.spawnPosY);
-    world.player_spr.weapon.mainWeapon.setInInv();
-    world.player_spr.weapon.nonCurWeapon = world.player_spr.weapon.mainWeapon;
+    //world.player_spr.weapon.mainWeapon = new WepSys.Rifle(this, world.spawnPosX, world.spawnPosY);
+    //world.player_spr.weapon.mainWeapon.setInInv();
+    //world.player_spr.weapon.nonCurWeapon = world.player_spr.weapon.mainWeapon;
 
 
     window['gun'] = world.player_spr.weapon.offWeapon;
@@ -208,7 +208,7 @@ function create() {
 
     //var testGun = new WepSys.Rifle(this, world.spawnPosX + 50, world.spawnPosY);
 
-    var testDrop = new WeaponPickup(this, world.spawnPosX + 50, world.spawnPosY, WepSys.Pistol, world, 'rifle');
+    var testDrop = new WepPickup.RiflePickup(this, world.spawnPosX + 50, world.spawnPosY, world);
 
     //Adding Collider for Checking walls
     this.physics.add.collider(world.player_spr, world.wallLayer);
@@ -371,8 +371,11 @@ function update() {
     world.player_spr.weapon.curWeapon.updateMe(this,world);
 
     //Update non current weapon location
-    world.player_spr.weapon.nonCurWeapon.x = world.player_spr.x - 2;
-    world.player_spr.weapon.nonCurWeapon.y = world.player_spr.y;
+    if(world.player_spr.weapon.nonCurWeapon != null){
+        world.player_spr.weapon.nonCurWeapon.x = world.player_spr.x - 2;
+        world.player_spr.weapon.nonCurWeapon.y = world.player_spr.y;
+    }
+    
 
 
     updateCamera(this);

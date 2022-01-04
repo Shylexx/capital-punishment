@@ -1,4 +1,4 @@
-
+import * as WepPickup from "./weaponPickups.js";
 
 export class Weapon extends Phaser.Physics.Arcade.Sprite{
     weaponVars = {
@@ -93,12 +93,18 @@ export class Pistol extends Weapon{
     }   
 
     }
+
+    createPickup(){
+        this.scene.add.existing(new WepPickup.PistolPickup(this.scene, this.x, this.y, world));
+    }
+
+
 }
 
 export class Rifle extends Weapon{
     constructor(scene, x, y){
         super(scene, x, y, 'rifle');
-        this.weaponType = "main";
+        this.weaponVars.weaponType = "main";
         this.weaponVars.name = "Rifle";
         this.weaponVars.fireMode = "auto";
         this.weaponVars.fireRate = 200;
@@ -122,5 +128,9 @@ export class Rifle extends Weapon{
             scene.cameras.main.shake(this.weaponVars.fireRate/2, 0.001, true);
         }
 
+    }
+
+    createPickup(){
+        this.scene.add.existing(new WepPickup.RiflePickup(this.scene, this.x, this.y, world));
     }
 }
