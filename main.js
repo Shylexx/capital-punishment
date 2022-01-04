@@ -210,6 +210,8 @@ function create() {
 
     var testDrop = new WepPickup.RiflePickup(this, world.spawnPosX + 50, world.spawnPosY, world);
 
+    var testDrop2 = new WepPickup.RiflePickup(this, world.spawnPosX + 20, world.spawnPosY, world);
+
     //Adding Collider for Checking walls
     this.physics.add.collider(world.player_spr, world.wallLayer);
     this.physics.add.collider(world.player_spr, world.groundLayer);
@@ -229,7 +231,7 @@ function create() {
         event.stopPropagation();
 
         if(world.player_spr.overlapping != false){
-            world.player_spr.pickupWeapon();
+            world.player_spr.pickupWeapon(world);
         }
 
     });

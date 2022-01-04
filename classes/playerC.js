@@ -89,7 +89,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             
         }
 
-        console.log("Main Wep: "+this.weapon.mainWeapon);
         //If currently on a weapon pickup, check for when we leave the pickup
         if(this.overlapping != false){
             this.overlapping.checkEndOverlap(this);
@@ -131,27 +130,37 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     } //end of standStill()
 
 
-    pickupWeapon(){
+    pickupWeapon(world){
 
         var pickup = this.overlapping;
-        console.log(pickup.weaponStored.weaponVars.weaponType);
+        console.log(this.weapon.mainWeapon != null && this.weapon.curWeapon == this.weapon.mainWeapon);
 
         if (pickup.weaponStored.weaponVars.weaponType == "main"){
             //Create Pickup Of Dropped Weapon
-            this.weapon.mainWeapon.createPickup();
+            if (this.weapon.mainWeapon != null){
+                //this.weapon.mainWeapon.createPickup(world);
+            }
             //this.scene.add.existing(new WeaponPickup(this.scene, this.x, this.y, this.weapon.mainWeapon, this));
             
             //Add Weapon to Player
-            if(this.weapon.curWeapon == this.weapon.mainWeapon){
-                this.weapon.curWeapon = pickup.weaponStored;
-                this.weapon.curWeapon.setDepth(6);
-            } else{
-                this.weapon.nonCurWeapon = pickup.weaponStored;
-                this.weapon.nonCurWeapon.setDepth(2);
-                this.weapon.nonCurWeapon.rotation = -90;
-            }
-            this.weapon.mainWeapon = pickup.weaponStored;
-            this.weapon.mainWeapon.enableBody(false,this.x,this.y.true,true).setActive(true).setVisible(true);
+           
+                if(this.weapon.mainWeapon != null && this.weapon.curWeapon == this.weapon.mainWeapon){
+                    this.weapon.curWeapon = pickup.weaponStored;
+                    this.weapon.mainWeapon = this.weapon.curWeapon
+                    this.weapon.curWeapon.setDepth(6);
+                    this.weapon.curWeapon.weaponVars.curWeapon = true;
+                    console.log("Swapped main with main equipped");
+                } else{
+                    this.weapon.nonCurWeapon = pickup.weaponStored;
+                    this.weapon.mainWeapon = this.weapon.nonCurWeapon;
+                    this.weapon.nonCurWeapon.setDepth(2);
+                    this.weapon.nonCurWeapon.rotation = -90;
+                    console.log("Swapped main with off equipped");
+                }
+                this.weapon.mainWeapon.enableBody(false,this.x,this.y.true,true).setActive(true).setVisible(true);
+        
+            
+            
 
             //Destroy Pickup
             pickup.disableBody(true, true).destroy();
@@ -160,13 +169,16 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             
         } else if (pickup.weaponStored.weaponVars.weaponType == "off") {
             //Create Pickup Of Dropped Weapon
-            this.weapon.offWeapon.createPickup();
+            if(this.weapon.offWeapon != null){
+                //this.weapon.offWeapon.createPickup(world);
+            }
             //this.scene.add.existing(new WeaponPickup(this.scene, this.x, this.y, this.weapon.offWeapon));
             
             //Add Weapon to Player
             if(this.weapon.curWeapon == this.weapon.offWeapon){
                 this.weapon.curWeapon = pickup.weaponStored;
                 this.weapon.curWeapon.setDepth(6);
+                this.weapon.curWeapon.weaponVars.curWeapon = true;
             } else {
                 this.weapon.nonCurWeapon = pickup.weaponStored;
                 this.weapon.curWeapon.setDepth(2);
@@ -192,6 +204,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             this.weapon.firing = true;
         } else{
             this.weapon.curWeapon.fire(scene, world);
+            console.log("Fire Pistol");
+            
         }
         
     } //end of fireWeapon()

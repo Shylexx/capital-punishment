@@ -130,7 +130,7 @@ export class Rifle extends Weapon{
 
     }
 
-    createPickup(){
+    createPickup(world){
         this.scene.add.existing(new WepPickup.RiflePickup(this.scene, this.x, this.y, world));
     }
 }
