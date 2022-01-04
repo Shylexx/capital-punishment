@@ -131,6 +131,7 @@ export class Rifle extends Weapon{
     }
 
     createPickup(world){
-        this.scene.add.existing(new WepPickup.RiflePickup(this.scene, this.x, this.y, world));
+        this.scene.add.existing(new WepPickup.RiflePickup(this.scene, world.player_spr.x, world.player_spr.y, world));
+        this.setVisible(false).setActive(false).destroy();
     }
 }

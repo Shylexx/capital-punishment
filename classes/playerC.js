@@ -138,7 +138,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         if (pickup.weaponStored.weaponVars.weaponType == "main"){
             //Create Pickup Of Dropped Weapon
             if (this.weapon.mainWeapon != null){
-                //this.weapon.mainWeapon.createPickup(world);
+                this.weapon.mainWeapon.createPickup(world);
             }
             //this.scene.add.existing(new WeaponPickup(this.scene, this.x, this.y, this.weapon.mainWeapon, this));
             
@@ -170,7 +170,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         } else if (pickup.weaponStored.weaponVars.weaponType == "off") {
             //Create Pickup Of Dropped Weapon
             if(this.weapon.offWeapon != null){
-                //this.weapon.offWeapon.createPickup(world);
+                this.weapon.offWeapon.createPickup(world);
             }
             //this.scene.add.existing(new WeaponPickup(this.scene, this.x, this.y, this.weapon.offWeapon));
             
