@@ -65,7 +65,7 @@ let config = {
 
 
 let WorldGenerator = new WalkerGen((world.ROWS/2),(world.COLUMNS/2));
-let LevelGenerator = new LevelGen(this, world);
+let LevelGenerator = new LevelGen(this, world, WorldGenerator);
 
 
 // Ensures reticle does not move offscreen and further than max dist(radius) from player

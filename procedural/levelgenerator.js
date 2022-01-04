@@ -1,12 +1,15 @@
+import * as Pickups from "../classes/weaponPickups.js";
+
 export class LevelGen {
-    constructor(scene){
-        this.scene = scene;
+    constructor(scene, world, WorldGenerator){
+        this.WorldGenData = WorldGenerator;
+
     }
 
     populateLevel(scene, world, gameVars){
         this.addEnemies();
         this.addDetail();
-        this.addLoot();
+        this.addLoot(scene, world, 2);
     }
 
     addEnemies(){
@@ -14,7 +17,7 @@ export class LevelGen {
     }
 
     addLoot(){
-        console.log("Added Weapon Pickups to Level");
+
     }
 
     addDetail(){
@@ -24,5 +27,9 @@ export class LevelGen {
     makeEnemySpawns(){
         console.log("Spawned Enemies");
     }
+
+
+    
+        
 
 }
