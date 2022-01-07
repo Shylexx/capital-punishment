@@ -8,17 +8,13 @@ export class LevelGen {
 
     populateLevel(scene, world, gameVars){
         this.addEnemies();
-        this.addDetail();
-        this.addLoot(scene, world, 2);
+        //this.addDetail();
     }
 
     addEnemies(){
         console.log("Added Enemies to Level");
     }
-
-    addLoot(){
-
-    }
+  
 
     addDetail(){
         console.log("Added Tile Details to Level");

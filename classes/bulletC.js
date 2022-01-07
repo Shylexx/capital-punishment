@@ -33,15 +33,49 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
         this.born = 0; // Time since new bullet spawned
     }//end of fire()
 
-
-
-    bulletDie(){
+    bulletHitWall(){
         this.disableBody(true, true);
         this.bounced = false;
     }
 
+
+}
+
+export class EnemyBullet extends Phaser.Physics.Arcade.Sprite{
+    constructor(scene, x, y){
+        super(scene, x, y, 'bullet');
+        this.speed = 600;
+        this.born = 0;
+        this.direction = 0;
+        this.xSpeed = 0;
+        this.ySpeed = 0;
+        this.setActive(true);
+        this.setVisible(true);
+        this.setScale(1, 1, true);
+    }//end of constructor
+
+    fire(shooterX, shooterY, targetX, targetY){
+        this.enableBody(true, shooterX, shooterY, true, true);
+        this.setBodySize(0.5,0.5);
+        this.setScale(0.7);
+        this.setRotation(Phaser.Math.Angle.Between(shooterX, shooterY, targetX, targetY));
+        this.direction = Math.atan( (targetX-this.x) / (targetY-this.y));
+
+        // Calculate X and y velocity of bullet to moves it from weapon to reticle
+        if (targetY >= this.y)
+        {
+            this.setVelocity((this.speed)*Math.sin(this.direction),(this.speed)*Math.cos(this.direction));
+        }
+        else
+        {
+            this.setVelocity((-this.speed)*Math.sin(this.direction),(-this.speed)*Math.cos(this.direction));
+        }
+
+        this.born = 0; // Time since new bullet spawned
+    }//end of fire()
+
     bulletHitWall(){
-        this.bulletDie();
+        this.disableBody(true, true);
     }
 
 

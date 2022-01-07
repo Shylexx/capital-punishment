@@ -1,9 +1,11 @@
+import { EnemyBullet } from "./bulletC.js";
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, xPos, yPos, texture){
         super(scene, xPos, yPos, texture);
         this.awake = false;
         this.wakeRadius = null;
         this.speed = null;
+        
         
     }
 
@@ -37,9 +39,13 @@ export class Grunt extends Enemy {
         this.wakeRadius = 100;
         this.speed = 10;
         this.lastMoved = null;
+        this.enemyBullets = scene.physics.add.group({classType: EnemyBullet, runChildUpdate: false});
+        this.enemyBullets.setX(xPos);
+        this.enemyBullets.setY(yPos);
+
     }
 
-    updateEnemy(scene, world){
+    updateEnemy(world){
         if(this.awake == false){
             this.checkWakeRadius(world);
         } else {
@@ -65,19 +71,29 @@ export class Shooter extends Enemy {
         this.moving = false;
     }
 
-    shootAtPlayer(){
+    shootAtPlayer(world){
         this.moving = false;
         this.setVelocity(0,0);
+        console.log("Fired Pistol");
 
+        var bullet = this.enemyBullets.get()
+        if(bullet){
+            bullet.fire(this.x, this.y, world.player_spr.x, world.player_spr.y);
+
+            //Bullet Collide with Walls
+            scene.physics.add.collider(bullet, world.wallLayer, bullet.bulletHitWall, null, bullet);
+
+        }
+        this.lastMoved = scene.time.now;
     }
 
-    updateEnemy(){
+    updateEnemy(world){
         if(this.awake == false){
             this.checkWakeRadius();
         }else if(this.awake && scene.time.now > this.lastMoved + this.moveDelay && this.moving == false){
             this.wander();
-            this.shootAtPlayer();
-            this.lastMoved = scene.time.now;
+            this.shootAtPlayer(world);
+
         }
     }
     

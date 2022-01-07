@@ -14,7 +14,7 @@ let gameVars = {
     curLevel: null,
     difficulty: null,
     score: null,
-    enemyAry: [],
+
 
 }
 
@@ -33,6 +33,8 @@ let world = {
     wallLayer: null,
     aboveLayer: null,
 
+    enemyAry: [],
+    
     player_spr: null,
     reticle_spr: null,
 
@@ -389,6 +391,11 @@ function update() {
 
 
     updateCamera(this);
+
+    //Update Enemies
+    // for(i = 0; i < enemyAry.length; i++){
+    //     enemyAry[i].updateEnemy(world);
+    // }
     
     
 } // end of update()
