@@ -124,6 +124,14 @@ function updateCamera(scene){
     
 }
 
+function getPlayerX(){
+    return world.player_spr.x;
+}
+
+function getPlayerY(){
+    return world.player_spr.y;
+}
+
 function preload() {
 
     //Load Tilesets
@@ -385,5 +393,4 @@ function update() {
     
 } // end of update()
 
-// eslint-disable-next-line no-undef
 let game = new Phaser.Game(config);
