@@ -10,13 +10,6 @@ import * as WepPickup from "./classes/weaponPickups.js";
 //import * as Enemy from "./classes/enemyC.js";
 //import {WeaponPickup} from "./classes/weaponPickups.js";
 
-let gameVars = {
-    curLevel: null,
-    difficulty: null,
-    score: null,
-
-
-}
 
 let world = {
     health_txt: null,
@@ -34,7 +27,7 @@ let world = {
     aboveLayer: null,
 
     enemyAry: [],
-    
+
     player_spr: null,
     reticle_spr: null,
 
@@ -43,6 +36,10 @@ let world = {
     FLOORPERCENT: 0.3,
     spawnPosX: null,
     spawnPosY: null,
+
+    curLevel: null,
+    difficulty: null,
+    score: null,
 }; // end of world
 
 let config = {
@@ -126,13 +123,10 @@ function updateCamera(scene){
     
 }
 
-function getPlayerX(){
-    return world.player_spr.x;
+function addEnemy(enemy){
+    world.enemyAry.push(enemy);
 }
 
-function getPlayerY(){
-    return world.player_spr.y;
-}
 
 function preload() {
 
@@ -181,7 +175,7 @@ function create() {
     WorldGenerator.genWorld(world);
     WorldGenerator.makeSpawnPos(world);
     buildMap(this, world);
-    LevelGenerator.populateLevel(this, world, gameVars);
+    LevelGenerator.populateLevel(this, world);
     
     // add camera
     this.cameras.main.setBounds(0, 0, world.map.widthInPixels, world.map.heightInPixels);

@@ -1,4 +1,4 @@
-import * as Pickups from "../classes/weaponPickups.js";
+import * as EnemySys from "../classes/enemyC.js";
 
 export class LevelGen {
     constructor(scene, world, WorldGenerator){
@@ -13,6 +13,14 @@ export class LevelGen {
 
     addEnemies(){
         console.log("Added Enemies to Level");
+        for(let i = 0; i < 8 (+ world.curLevel); i++){
+            var toAdd = Math.floor(Math.random() * 2);
+            if(toAdd == 0){
+                addEnemy(new EnemySys.Grunt());
+            }else if (toAdd == 1){
+                addEnemy(new EnemySys.Shooter());
+            }
+        }
     }
   
 
@@ -20,8 +28,10 @@ export class LevelGen {
         console.log("Added Tile Details to Level");
     }
 
-    makeEnemySpawns(){
-        console.log("Spawned Enemies");
+    //Returns a random floor tile from the level
+    //ASK ALMAS
+    getRandomFloor(){
+        
     }
 
 
