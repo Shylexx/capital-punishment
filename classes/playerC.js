@@ -4,8 +4,7 @@ import { Bullet } from "./bulletC.js";
 export class Player extends Phaser.Physics.Arcade.Sprite {
     stats = {
         //Basic Stats
-        maxHP: 10,
-        curHP: 10,
+        curHP: 50,
         moveSpeed: 75,
 
         weaponDmg: 10,
@@ -38,7 +37,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.facing = null;
         this.idle = true;
 
-            //Create Bullet Group
+        //Create Bullet Group
         this.weapon.bulletGroup = scene.physics.add.group({classType: Bullet, runChildUpdate: false});
         this.weapon.bulletGroup.setX(xPos);
         this.weapon.bulletGroup.setY(yPos);
@@ -232,6 +231,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             this.weapon.nonCurWeapon.rotation = -90;
             
         }
+    }
+
+    hurtPlayer(){
+        this.stats.curHP--;
+        console.log(this.stats.curHP);
     }
 
 } // end of Player class

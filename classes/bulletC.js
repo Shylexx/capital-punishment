@@ -1,14 +1,14 @@
 export class Bullet extends Phaser.Physics.Arcade.Sprite{
     constructor(scene, x, y){
         super(scene, x, y, 'bullet');
-        this.speed = 600;
+        this.speed = 200;
         this.born = 0;
         this.direction = 0;
         this.xSpeed = 0;
         this.ySpeed = 0;
         this.setActive(true);
         this.setVisible(true);
-        this.setScale(1, 1, true);
+        this.setScale(0.2, 0.2, true);
         this.type = "standard";
         this.bounced = false;
     }//end of constructor
@@ -16,7 +16,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
     fire(weapon, world){
         this.enableBody(true, weapon.x, weapon.y-5, true, true);
         this.setBodySize(0.5,0.5);
-        this.setScale(0.7);
+        this.setScale(0.4);
         this.setRotation(Phaser.Math.Angle.Between(world.player_spr.x, world.player_spr.y, world.reticle_spr.x, world.reticle_spr.y));
         this.direction = Math.atan( (world.reticle_spr.x-this.x) / (world.reticle_spr.y-this.y));
 
@@ -38,13 +38,19 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
         this.bounced = false;
     }
 
+    bulletHitEnemy(bullet, enemy){
+        console.log('Bullet hit enemy');
+        enemy.hp--;
+        this.disableBody(true,true);
+    }
+
 
 }
 
 export class EnemyBullet extends Phaser.Physics.Arcade.Sprite{
     constructor(scene, x, y){
         super(scene, x, y, 'bullet');
-        this.speed = 300;
+        this.speed = 200;
         this.born = 0;
         this.direction = 0;
         this.xSpeed = 0;
@@ -71,12 +77,18 @@ export class EnemyBullet extends Phaser.Physics.Arcade.Sprite{
             this.setVelocity((-this.speed)*Math.sin(this.direction),(-this.speed)*Math.cos(this.direction));
         }
 
-        this.born = 0; // Time since new bullet spawned
+        this.born = 0; // Time since new bullet spawnedd
     }//end of fire()
 
     bulletHitWall(){
         this.disableBody(true, true);
     }
+
+    bulletHitPlayer(){
+        this.disableBody(true, true);
+    }
+
+
 
 
 }

@@ -84,7 +84,11 @@ export class Pistol extends Weapon{
 
             //Bullet Collide with Walls
             scene.physics.add.collider(bullet, world.wallLayer, bullet.bulletHitWall, null, bullet);
-            
+
+            for(let i = 0; i < world.enemyAry.length; i++){
+            scene.physics.add.overlap(bullet, world.enemyAry[i], bullet.bulletHitEnemy, null, bullet);
+            }
+
             scene.cameras.main.shake(this.weaponVars.fireRate/2, 0.0001, true);
         }
         this.weaponVars.lastFired = scene.time.now;

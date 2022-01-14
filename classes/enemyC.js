@@ -47,8 +47,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 }
 
 export class Grunt extends Enemy {
-    constructor(scene, xPos, yPos, texture){
-        super(scene, xPos, yPos, texture);
+    constructor(scene, xPos, yPos, world){
+        super(scene, xPos, yPos, 'skeleton');
         this.awake = false;
         this.wakeRadius = 100;
         this.speed = 10;
@@ -58,19 +58,40 @@ export class Grunt extends Enemy {
         this.enemyBullets.setY(yPos);
         this.hp = 5;
 
+        scene.physics.add.existing(this);
+        this.setScale(0.6);
+        //set up the physics properties
+
+        scene.physics.add.overlap(this, world.player_spr, world.player_spr.hurtPlayer, null, world.player_spr)
+
+        scene.anims.createFromAseprite('skeleton');
+        this.setCollideWorldBounds(true);
+
+
+
+        scene.add.existing(this);
+
     }
 
     updateEnemy(world){
         if(this.awake == false){
             this.checkWakeRadius(world);
+            this.moving = false;
         } else {
+            this.moving = true;
+
 
             //Basic chase, move in straight line toward enemy.
             var dirX = world.player_spr.x - this.x;
             var dirY = world.player_spr.y - this.y;
-
             this.setVelocityX(Math.sign(dirX) * this.speed);
             this.setVelocityY(Math.sign(dirY) * this.speed);
+            
+        }
+        if(this.moving){
+            this.play('walkSkel', true);
+        } else {
+            this.play('idleSkel', true);
         }
     }
 }
@@ -85,6 +106,8 @@ export class Shooter extends Enemy {
         this.moveDelay = 500;
         this.moving = false;
         this.hp = 5;
+        this.setScale(0.5);
+        
     }
 
     shootAtPlayer(world){
@@ -105,6 +128,11 @@ export class Shooter extends Enemy {
     }
 
     updateEnemy(world){
+        if(this.moving){
+            this.play('walk', true);
+        } else {
+            this.play('idle', true);
+        }
         if(this.awake == false){
             this.checkWakeRadius();
         }else if(this.awake && scene.time.now > this.lastMoved + this.moveDelay){
