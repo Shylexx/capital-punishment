@@ -44,20 +44,20 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
 export class EnemyBullet extends Phaser.Physics.Arcade.Sprite{
     constructor(scene, x, y){
         super(scene, x, y, 'bullet');
-        this.speed = 600;
+        this.speed = 300;
         this.born = 0;
         this.direction = 0;
         this.xSpeed = 0;
         this.ySpeed = 0;
         this.setActive(true);
         this.setVisible(true);
-        this.setScale(1, 1, true);
+        this.setScale(0.3, 0.3, true);
     }//end of constructor
 
     fire(shooterX, shooterY, targetX, targetY){
         this.enableBody(true, shooterX, shooterY, true, true);
-        this.setBodySize(0.5,0.5);
-        this.setScale(0.7);
+        this.setBodySize(0.3,0.3);
+        this.setScale(0.3);
         this.setRotation(Phaser.Math.Angle.Between(shooterX, shooterY, targetX, targetY));
         this.direction = Math.atan( (targetX-this.x) / (targetY-this.y));
 

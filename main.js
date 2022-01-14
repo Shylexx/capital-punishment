@@ -20,6 +20,7 @@ let world = {
     tileset: null,
     wallTiles: null,
 
+
     levelAry: null,
 
     groundLayer: null,
@@ -36,14 +37,23 @@ let world = {
     FLOORPERCENT: 0.3,
     spawnPosX: null,
     spawnPosY: null,
+    curWave: 0,
 
-    curLevel: null,
-    difficulty: null,
-    score: null,
+    pickupText: null,
+    controlText: null,
+    scoreText: null
 }; // end of world
 
+let scoring = {
+    score: 0,
+    highscore: null,
+    scoreStorage: "CapPunScore",
+    waveStorage: "CapPunWave",
+    wave: 0,
+    highWave: null,
+};
+
 let config = {
-    // eslint-disable-next-line no-undef
     type: Phaser.AUTO,
     width: 1280, // Canvas width in pixels
     height:960, // Canvas height in pixels
@@ -59,8 +69,22 @@ let config = {
         preload: preload,
         create: create,
         update: update
-    }
+    },
+    scale: {
+        mode: Phaser.Scale.RESIZE,
+        _parent: 'phaser-example',
+        width: 1280,
+        height: 960,
+        zoom: 7,
+    },
+    pixelArt:true,
 };
+
+scoring.highscore = localStorage.getItem(scoring.scoreStorage) == null ? 0 :
+localStorage.getItem(scoring.scoreStorage);
+
+scoring.highWave = localStorage.getItem(scoring.waveStorage) == null ? 0 :
+localStorage.getItem(scoring.waveStorage);
 
 
 let WorldGenerator = new WalkerGen((world.ROWS/2),(world.COLUMNS/2));
@@ -99,6 +123,8 @@ function constrainReticle(scene, reticle)
     
 }
 
+
+
 function updateCamera(scene){
 
 
@@ -132,11 +158,13 @@ function preload() {
 
     //Load Tilesets
     this.load.image('walls', 'assets/walltiles.png');
-    this.load.image('bgtiles', 'assets/bgtiles.png');
+    //this.load.image('bgtiles', 'assets/bgtiles.png');
+    this.load.image('tiles', 'assets/tiles/colored_transparent.png');
+    this.load.image('bgtiles', 'assets/tiles/colored.png');
 
     //Load Bullet Sprite
     this.load.aseprite({
-        key: 'bullet',
+        key: 'bullet',  
         textureURL: 'assets/weapons/bullet.png',
         atlasURL: 'assets/weapons/bullet.json',
     });
@@ -175,7 +203,7 @@ function create() {
     WorldGenerator.genWorld(world);
     WorldGenerator.makeSpawnPos(world);
     buildMap(this, world);
-    LevelGenerator.populateLevel(this, world);
+    //LevelGenerator.populateLevel(this, world);
     
     // add camera
     this.cameras.main.setBounds(0, 0, world.map.widthInPixels, world.map.heightInPixels);
@@ -185,13 +213,14 @@ function create() {
 
     //Create Player and Reticle Sprites
     world.player_spr = new Player(this, world.spawnPosX, world.spawnPosY, 'janitor');
-    world.player_spr.setScale(1.2);
+    world.player_spr.setScale(0.5);
     world.player_spr.setDepth(3);
-    world.player_spr.setBodySize(0.5, 0.5);
+    world.player_spr.setBodySize(0.7, 0.7);
 
 
     world.reticle_spr =  this.physics.add.sprite(world.spawnPosX, world.spawnPosY, 'reticle');
     world.reticle_spr.setDepth(10);
+    world.reticle_spr.setScale(0.5);
 
 
 
@@ -201,14 +230,6 @@ function create() {
     world.player_spr.weapon.offWeapon.setInInv();
     world.player_spr.weapon.curWeapon.setDepth(6);
     world.player_spr.weapon.curWeapon.weaponVars.curWeapon = true;
-    //world.player_spr.weapon.mainWeapon = new WepSys.Rifle(this, world.spawnPosX, world.spawnPosY);
-    //world.player_spr.weapon.mainWeapon.setInInv();
-    //world.player_spr.weapon.nonCurWeapon = world.player_spr.weapon.mainWeapon;
-
-
-    window['gun'] = world.player_spr.weapon.offWeapon;
-
-    console.log(world.player_spr);
 
     //var testGun = new WepSys.Rifle(this, world.spawnPosX + 50, world.spawnPosY);
 
@@ -219,18 +240,64 @@ function create() {
     //Adding Collider for Checking walls
     this.physics.add.collider(world.player_spr, world.wallLayer);
     this.physics.add.collider(world.player_spr, world.groundLayer);
-    this.physics.add.collider(world.player_spr, world.wallBorderLayer);
-    this.physics.add.collider(world.player_spr, world.wallTopLayer);
-    
 
     //Creating Camera and having it follow the player
     //this.cameras.main.startFollow(world.player_spr, true, 0.1, 0.1);
     this.cameras.main.setRoundPixels(true);
-    this.cameras.main.zoom = 3;
+    this.cameras.main.zoom = 7;
+
+
+
+    //Create UI Element for Weapon Pickups
+    world.pickupText = this.add.text(world.player_spr.x - world.player_spr.displayWidth/2, world.player_spr.y-15, "Pickup Text", {
+        fontFamily: 'KenneyPixel',
+        fontSize: '40px',
+    });
+    world.pickupText.setDepth(3).setScale(0.15).setVisible(false);
+
+    //Create UI Text for Controls
+    world.controlText = this.add.text(this.cameras.main.midPoint.x + (this.cameras.main.displayWidth / 4),this.cameras.main.midPoint.y + (this.cameras.main.displayHeight / 4), "Controls:  \nWASD To Move\n Space to Pick Up Weapon\n Q to swap weapons\n Left Mouse to Fire", {
+        fontFamily: 'KenneyPixel',
+        fontSize: '40px',
+    });
+    world.controlText.setDepth(3).setScale(0.15).setVisible(true);
+
+    //Create Text For Score Display
+    world.scoreText = this.add.text(this.cameras.main.midPoint.x - (this.cameras.main.displayWidth / 2.2),this.cameras.main.midPoint.y - (this.cameras.main.displayHeight / 2.2), "Score Text", {
+        fontFamily: 'KenneyPixel',
+        fontSize: '40px',
+    });
+    world.scoreText.setDepth(3).setScale(0.15).setVisible(true);
 
 
     //E key down for picking up weapons
     this.input.keyboard.on('keydown-E', function (event) {
+
+        event.stopPropagation();
+
+        scoring.score++;
+        SaveStats();
+        /* if(world.player_spr.overlapping != false){
+            world.player_spr.pickupWeapon(world);
+        } */
+
+    });
+
+    //E key down for picking up weapons
+    this.input.keyboard.on('keydown-F', function (event) {
+
+        event.stopPropagation();
+
+        scoring.wave++;
+        SaveStats();
+        /* if(world.player_spr.overlapping != false){
+            world.player_spr.pickupWeapon(world);
+        } */
+
+    });
+
+    //Space bar down for picking up weapons
+    this.input.keyboard.on('keydown-SPACE', function (event) {
 
         event.stopPropagation();
 
@@ -281,12 +348,10 @@ function create() {
       if (this.input.mouse.locked)
       {
           // Move reticle with mouse
-          world.reticle_spr.x = world.reticle_spr.x + pointer.movementX;
-          world.reticle_spr.y = world.reticle_spr.y + pointer.movementY;
+          world.reticle_spr.x = world.reticle_spr.x + pointer.movementX/3;
+          world.reticle_spr.y = world.reticle_spr.y + pointer.movementY/3;
           
       }
-
-
       
     }, this);
 
@@ -310,27 +375,32 @@ function buildMap(scene, world) {
     */
     // Initialise the tilemap
     world.map = scene.make.tilemap({
-        data: WorldGenerator.genData.l1backg_ary , tileWidth: 32, tileHeight: 32
+        data: WorldGenerator.genData.l1backg_ary , tileWidth: 16, tileHeight: 16
     });
 
     //Add TileSets
     world.wallTiles = world.map.addTilesetImage('walls','walls', 32, 32, 1, 4);
-    world.bgTileSet = world.map.addTilesetImage('bgtiles', 'bgtiles', 32, 32, 1, 4);
+    world.bgTileSet = world.map.addTilesetImage('bgtiles', 'bgtiles', 16, 16, 0, 1);
+    world.tileset = world.map.addTilesetImage('tiles', 'tiles', 16, 16, 0, 1);
 
     // set up the tilemap layers
     world.groundLayer = world.map.createLayer(0, world.bgTileSet, 0, 0);
-    world.wallLayer = world.map.createBlankLayer('wallLayer', world.wallTiles, 0, 0);
+    world.wallLayer = world.map.createBlankLayer('wallLayer', world.tileset, 0, 0);
 
     for(let x = 0; x < WorldGenerator.roomWidth; x++){
         for( let y = 0; y < WorldGenerator.roomHeight; y++){
             if(WorldGenerator.genData.l1walker_ary[x][y] == 1){
-                world.wallLayer.putTileAt(1, x, y);
+                world.groundLayer.putTileAt(0, x, y);
+                world.wallLayer.putTileAt(833, x, y);
             } else if (WorldGenerator.genData.l1walker_ary[x][y]== 2){
-                world.wallLayer.putTileAt(2, x, y);
+                world.groundLayer.putTileAt(0, x, y);
+                world.wallLayer.putTileAt(833, x, y);
             } else if (WorldGenerator.genData.l1walker_ary[x][y]== 3){
-                world.wallLayer.putTileAt(1, x, y);
+                world.groundLayer.putTileAt(0, x, y);
+                world.wallLayer.putTileAt(833, x, y);
             } else if(WorldGenerator.genData.l1walker_ary[x][y]== 4){
-                world.wallLayer.putTileAt(1, x, y);
+                world.groundLayer.putTileAt(0, x, y);
+                world.wallLayer.putTileAt(833, x, y);
             }
             
 
@@ -343,22 +413,69 @@ function buildMap(scene, world) {
 
 
     //enable collision handling in blockLayer
-    world.wallLayer.setCollision([0, 1, 2, 3, 4], true);
+    world.wallLayer.setCollision([833], true);
 
 
-    
 
-
-    // Add the health text - set it so it moves with the camera
-    world.health_txt = scene.add.text(10, 10, 'Health goes here', {
-        font: '34px Arial',
-        fill: '#fff'
-    }).setScrollFactor(0);
 } //end of buildMap()
 
+function CheckEnemyHP(){
+    for(let enemy in world.enemyAry){
+        if(world.enemyAry[enemy].hp < 1){
+            world.enemyAry[enemy].setActive(false).setVisible(false).destroy();
+            world.enemyAry.splice(enemy, 1);
+            scoring.score++;
+        }
+
+    }
+}
+
+function CheckEnemiesLeft(){
+    if(world.enemyAry.length < 1){
+        scoring.wave++;
+        world.curWave++;
+        LevelGenerator.spawnWave();
+        
+    }
+}
+
+function CheckHighScores(){
+    if(scoring.wave > scoring.highWave){
+        scoring.highWave = scoring.wave;
+    }
+    if(scoring.score > scoring.highscore){
+        scoring.highscore = scoring.score;
+    }
+}
+
+function SaveStats(){
+    //Init Score Saving
+    scoring.highscore = Math.max(scoring.score, scoring.highscore);
+    localStorage.setItem(scoring.scoreStorage, scoring.highscore);
+
+    scoring.highWave = Math.max(scoring.wave, scoring.highWave);
+    localStorage.setItem(scoring.waveStorage, scoring.highWave);
+}
 
 function update() {
+
+    //Update UI
+    console.log(this.cameras.main.midPoint);
+    if(world.player_spr.overlapping != false){
+        world.pickupText.setText("SPACE for " + world.player_spr.overlapping.weaponStored.weaponVars.name).setVisible(true).setX(world.player_spr.x - world.player_spr.displayWidth/2).setY(world.player_spr.y-15);
+    }else{
+        world.pickupText.setVisible(false);
+    }
+
+    world.controlText.setX(this.cameras.main.midPoint.x + (this.cameras.main.displayWidth / 4)).setY(this.cameras.main.midPoint.y + (this.cameras.main.displayHeight / 4));
+
+    world.scoreText.setText("Score: "+ scoring.score+ "\nHigh Score: "+ scoring.highscore+"\nCurrent Wave: "+world.curWave+ "\n Highest Wave: "+ scoring.highWave).setX(this.cameras.main.midPoint.x - (this.cameras.main.displayWidth / 2.2)).setY(this.cameras.main.midPoint.y - (this.cameras.main.displayHeight / 2.2));   
+
     world.player_spr.updatePlayer(world);
+
+    //checkBulletCollision();
+
+    CheckEnemyHP();
 
 
     // reset the player motion
@@ -381,7 +498,6 @@ function update() {
         world.player_spr.weapon.nonCurWeapon.x = world.player_spr.x - 2;
         world.player_spr.weapon.nonCurWeapon.y = world.player_spr.y;
     }
-    
 
 
     updateCamera(this);

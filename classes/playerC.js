@@ -6,7 +6,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         //Basic Stats
         maxHP: 10,
         curHP: 10,
-        moveSpeed: 100,
+        moveSpeed: 75,
 
         weaponDmg: 10,
         weaponFireRate: 0,
@@ -70,7 +70,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         
 
         // Check the keys and update movement if required
-        this.play('idle2', true);
+        if (this.body.velocity.x == 0 && this.body.velocity.y == 0){
+        this.play('idle', true);
+        } else {
+            this.play('walk', true);
+        }
         
         if (world.moveKeys.A.isDown) {
             this.moveLeft();
@@ -102,24 +106,24 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     //movement methods
     moveLeft() {
         //this.anims.play('walkLeft',true)
-        this.setVelocityX(-150);
+        this.setVelocityX(-this.stats.moveSpeed);
         //this.x -= 1
     } // end of moveLeft()
 
     moveRight() {
         //this.anims.play('walkRight',true)
-        this.setVelocityX(150);
+        this.setVelocityX(this.stats.moveSpeed);
         //this.x += 1
     } // end of moveRight()
 
     moveUp() {
        // this.anims.play('walkUp',true)
-        this.setVelocityY(-150);
+        this.setVelocityY(-this.stats.moveSpeed);
         //this.y -= 1
     } // end of moveUp()
     moveDown() {
         //this.anims.play('walkDown', true)
-        this.setVelocityY(150);
+        this.setVelocityY(this.stats.moveSpeed);
         //this.y += 1
     } // end of moveDown()
 
@@ -133,7 +137,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     pickupWeapon(world){
 
         var pickup = this.overlapping;
-        console.log(this.weapon.mainWeapon != null && this.weapon.curWeapon == this.weapon.mainWeapon);
 
         if (pickup.weaponStored.weaponVars.weaponType == "main"){
             //Create Pickup Of Dropped Weapon
@@ -149,13 +152,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
                     this.weapon.mainWeapon = this.weapon.curWeapon
                     this.weapon.curWeapon.setDepth(6);
                     this.weapon.curWeapon.weaponVars.curWeapon = true;
-                    console.log("Swapped main with main equipped");
                 } else{
                     this.weapon.nonCurWeapon = pickup.weaponStored;
                     this.weapon.mainWeapon = this.weapon.nonCurWeapon;
                     this.weapon.nonCurWeapon.setDepth(2);
                     this.weapon.nonCurWeapon.rotation = -90;
-                    console.log("Swapped main with off equipped");
                 }
                 this.weapon.mainWeapon.enableBody(false,this.x,this.y.true,true).setActive(true).setVisible(true);
         
@@ -204,7 +205,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             this.weapon.firing = true;
         } else{
             this.weapon.curWeapon.fire(scene, world);
-            console.log("Fire Pistol");
             
         }
         

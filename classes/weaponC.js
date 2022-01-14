@@ -18,7 +18,6 @@ export class Weapon extends Phaser.Physics.Arcade.Sprite{
 
 
     fire(scene, world) {
-        console.log("Fired");
     }
 
     updateMe(scene, world){
@@ -33,7 +32,7 @@ export class Weapon extends Phaser.Physics.Arcade.Sprite{
             } else{
                 this.flipY = false;
             }
-            Phaser.Math.RotateTo(this, world.player_spr.x, world.player_spr.y+5, Phaser.Math.Angle.Between(world.player_spr.x, world.player_spr.y, world.reticle_spr.x, world.reticle_spr.y), 17);
+            Phaser.Math.RotateTo(this, world.player_spr.x, world.player_spr.y+3, Phaser.Math.Angle.Between(world.player_spr.x, world.player_spr.y, world.reticle_spr.x, world.reticle_spr.y), 6);
             this.body.reset(this.x, this.y);
         
 
@@ -71,13 +70,12 @@ export class Pistol extends Weapon{
         this.weaponVars.fireRate = 300;
         scene.physics.add.existing(this);
         scene.add.existing(this);
-        this.setScale(0.6);
+        this.setScale(0.3);
 
     }
     fire(scene, world) {
 
     if (scene.time.now > this.weaponVars.lastFired + this.weaponVars.fireRate - world.player_spr.stats.weaponFireRate){
-        console.log("Fired Pistol");
 
         var bullet = world.player_spr.weapon.bulletGroup.get()
         if(bullet){
@@ -87,7 +85,7 @@ export class Pistol extends Weapon{
             //Bullet Collide with Walls
             scene.physics.add.collider(bullet, world.wallLayer, bullet.bulletHitWall, null, bullet);
             
-            scene.cameras.main.shake(this.weaponVars.fireRate/2, 0.001, true);
+            scene.cameras.main.shake(this.weaponVars.fireRate/2, 0.0001, true);
         }
         this.weaponVars.lastFired = scene.time.now;
     }   
@@ -110,10 +108,9 @@ export class Rifle extends Weapon{
         this.weaponVars.fireRate = 200;
         scene.physics.add.existing(this);
         scene.add.existing(this);
-        this.setScale(1.2, 0.7);
+        this.setScale(0.6, 0.35);
     }
     fire(scene, world){
-        console.log("Fired Rifle")
 
         var bullet = world.player_spr.weapon.bulletGroup.get()
         if(bullet){
@@ -125,7 +122,7 @@ export class Rifle extends Weapon{
             scene.physics.add.collider(bullet, world.wallLayer, bullet.bulletHitWall, null, bullet);
 
 
-            scene.cameras.main.shake(this.weaponVars.fireRate/2, 0.001, true);
+            scene.cameras.main.shake(this.weaponVars.fireRate/2, 0.0001, true);
         }
 
     }

@@ -43,6 +43,7 @@ export class RiflePickup extends WeaponPickup {
         this.rotation = Math.floor(Math.random() * 360);
 
         scene.physics.add.existing(this);
+        this.setScale(0.6, 0.35);
 
 
         scene.physics.add.overlap(this, world.player_spr, this.overlapPlayer, null, this);

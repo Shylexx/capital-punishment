@@ -51,7 +51,7 @@ export class WalkerGen {
         for(let x = 0; x < this.roomWidth-1; x++){
             for( let y = 0; y < this.roomHeight-1; y++){
                 this.genData.l1walker_ary[x][y] = 1;
-                this.genData.l1backg_ary[x][y] = 0;
+                this.genData.l1backg_ary[x][y] = Math.floor(Math.random() * (4 - 1 + 1) + 1);
             }
         }
 
@@ -129,16 +129,15 @@ export class WalkerGen {
             }
 
             //Check to Exit loop 
-            //console.log("Current Percentage: " +(this.NumberOfFloors()/ (this.roomHeight * this.roomWidth)))
+ 
             if(this.NumberOfFloors() / (this.roomHeight * this.roomWidth) > percentToFill){
                 break;
             }
             iterations++;
-            //console.log(this.NumberOfFloors());
+
 
           }while(iterations < 100000);    
-          //console.log(this.genData.l1walker_ary);
-          //console.log(this.genData.l1backg_ary);
+
     }
 
      CreateWalls(){
@@ -220,9 +219,9 @@ export class WalkerGen {
                 }
             }
         }
-        //Convert Spawn Tile to World Coordinates (+16 for midpoint)
-        world.spawnPosX = world.spawnPosX * 32 + 16
-        world.spawnPosY = world.spawnPosY * 32 + 16
+        //Convert Spawn Tile to World Coordinates (+8 for midpoint)
+        world.spawnPosX = world.spawnPosX * 16 + 8
+        world.spawnPosY = world.spawnPosY * 16 + 8
     }
 
     RandomDirection(){

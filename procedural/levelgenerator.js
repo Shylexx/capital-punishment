@@ -6,14 +6,14 @@ export class LevelGen {
 
     }
 
-    populateLevel(scene, world, gameVars){
-        this.addEnemies();
+    populateLevel(scene, world){
+        this.addEnemies(world);
         //this.addDetail();
     }
 
-    addEnemies(){
+    spawnWave(world){
         console.log("Added Enemies to Level");
-        for(let i = 0; i < 8 (+ world.curLevel); i++){
+        for(let i = 0; i < (8 + world.curWave); i++){
             var toAdd = Math.floor(Math.random() * 2);
             if(toAdd == 0){
                 addEnemy(new EnemySys.Grunt());
@@ -22,6 +22,7 @@ export class LevelGen {
             }
         }
     }
+    
   
 
     addDetail(){
@@ -33,6 +34,8 @@ export class LevelGen {
     getRandomFloor(){
         
     }
+
+    
 
 
     
