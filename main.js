@@ -5,7 +5,7 @@ import { WalkerGen } from "./procedural/worldgenerator.js";
 import {LevelGen} from "./procedural/levelgenerator.js";
 import * as WepSys from "./classes/weaponC.js";
 import * as WepPickup from "./classes/weaponPickups.js";
-import { Grunt } from "./classes/enemyC.js";
+import { Shooter } from "./classes/enemyC.js";
 
 //import {Bullet} from "./classes/bulletC.js";
 //import * as Enemy from "./classes/enemyC.js";
@@ -63,7 +63,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true,
+            debug: false,
             pixelArt: true,
         }
     },
@@ -163,6 +163,7 @@ function preload() {
     //this.load.image('bgtiles', 'assets/bgtiles.png');
     this.load.image('tiles', 'assets/tiles/colored_transparent.png');
     this.load.image('bgtiles', 'assets/tiles/colored.png');
+    this.load.image('witchbolt', 'assets/enemies/witchbolt.png');
 
     //Load Bullet Sprite
     this.load.aseprite({
@@ -201,7 +202,13 @@ function preload() {
         key: 'skeleton',
         textureURL: 'assets/enemies/skeleton.png',
         atlasURL: 'assets/enemies/skeleton.json'
-    })
+    });
+
+    this.load.aseprite({
+        key: 'witch',
+        textureURL: 'assets/enemies/witch.png',
+        atlasURL: 'assets/enemies/witch.json'
+    });
 
 } //end of preload()
 
@@ -232,7 +239,7 @@ function create() {
     world.reticle_spr.setScale(0.5);
 
     //WorldGenerator.makeSpawnPos(world);
-    var enemy = new Grunt(this, world.spawnPosX + 30, world.spawnPosY, world)
+    var enemy = new Shooter(this, world.spawnPosX + 30, world.spawnPosY, world);
     world.enemyAry.push(enemy);
     console.log(world.enemyAry[0]);
     world.enemyAry[0].setBodySize(0.7, 0.7);
@@ -291,11 +298,11 @@ function create() {
     world.scoreText.setDepth(3).setScale(0.15).setVisible(true);
 
     //Create Game Over Text
-    world.gameOverText = this.add.text(this.cameras.main.midPoint.x, this.cameras.main.midPoint.y, "Game Over\n Refresh to Try Again", {
+    world.gameOverText = this.add.text(this.cameras.main.midPoint.x, this.cameras.main.midPoint.y, "Game Over\n Refresh to \nTry Again", {
         fontFamily: 'KenneyPixel',
-        fontSize: '25px',
+        fontSize: '50px',
     });
-    world.gameOverText.setDepth(3).setVisible(false);
+    world.gameOverText.setDepth(3).setAlign("center").setScale(0.5).setColor("white").setVisible(false);
 
 
     //E key down for picking up weapons
@@ -473,7 +480,7 @@ function SaveStats(){
 function gameOver(scene){
     SaveStats();
     console.log("Game Over");
-    world.gameOverText.setText("Game Over\n Refresh to Try Again").setX(scene.cameras.main.midPoint.x - scene.cameras.main.displayWidth / 4).setY(scene.cameras.main.midPoint.y).setVisible(true);
+    world.gameOverText.setText("Game Over\n Refresh to Try Again").setX(scene.cameras.main.midPoint.x - scene.cameras.main.displayWidth / 3).setY(scene.cameras.main.midPoint.y).setVisible(true);
     game.destroy();
 }
 
@@ -527,7 +534,7 @@ function update() {
 
     //Update Enemies
      for(let i = 0; i < world.enemyAry.length; i++){
-         world.enemyAry[i].updateEnemy(world);
+         world.enemyAry[i].updateEnemy(this, world);
          if(world.enemyAry[i].awake == true){
              if(world.player_spr.x < world.enemyAry[i].x){
                  world.enemyAry[i].flipX = true;

@@ -49,7 +49,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
 
 export class EnemyBullet extends Phaser.Physics.Arcade.Sprite{
     constructor(scene, x, y){
-        super(scene, x, y, 'bullet');
+        super(scene, x, y, 'witchbolt');
         this.speed = 200;
         this.born = 0;
         this.direction = 0;
@@ -61,9 +61,10 @@ export class EnemyBullet extends Phaser.Physics.Arcade.Sprite{
     }//end of constructor
 
     fire(shooterX, shooterY, targetX, targetY){
-        this.enableBody(true, shooterX, shooterY, true, true);
-        this.setBodySize(0.3,0.3);
-        this.setScale(0.3);
+        this.enableBody(true, shooterX, shooterY+5, true, true);
+        this.setBodySize(0.6,0.6);
+        this.setScale(0.4);
+        this.setDepth(6);
         this.setRotation(Phaser.Math.Angle.Between(shooterX, shooterY, targetX, targetY));
         this.direction = Math.atan( (targetX-this.x) / (targetY-this.y));
 
@@ -77,14 +78,16 @@ export class EnemyBullet extends Phaser.Physics.Arcade.Sprite{
             this.setVelocity((-this.speed)*Math.sin(this.direction),(-this.speed)*Math.cos(this.direction));
         }
 
-        this.born = 0; // Time since new bullet spawnedd
+        this.born = 0; // Time since new bullet spawned
     }//end of fire()
 
     bulletHitWall(){
+        console.log("Bullet Hit Wall");
         this.disableBody(true, true);
     }
 
     bulletHitPlayer(){
+        console.log("Bullet Hit Player");
         this.disableBody(true, true);
     }
 

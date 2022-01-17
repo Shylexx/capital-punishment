@@ -26,15 +26,15 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     wander(){
         this.moving = true;
-        var dir = Math.floor(Math.random() * (5 - 0) ) + 0;
+    var dir = Math.floor(Math.random() * (5 - 0) ) + 0;
         if(dir == 0){
-            this.setVelocity(60, 0);
+            this.setVelocity(40, 0);
         } else if (dir == 2){
-            this.setVelocity(-60, 0);
+            this.setVelocity(-40, 0);
         }else if (dir == 3){
-            this.setVelocity(0, 60);
+            this.setVelocity(0, 40);
         }else if (dir == 4){
-            this.setVelocity(0, -60);
+            this.setVelocity(0, -40);
         }
 
 
@@ -53,9 +53,7 @@ export class Grunt extends Enemy {
         this.wakeRadius = 100;
         this.speed = 10;
         this.lastMoved = null;
-        this.enemyBullets = scene.physics.add.group({classType: EnemyBullet, runChildUpdate: false});
-        this.enemyBullets.setX(xPos);
-        this.enemyBullets.setY(yPos);
+
         this.hp = 5;
 
         scene.physics.add.existing(this);
@@ -73,7 +71,7 @@ export class Grunt extends Enemy {
 
     }
 
-    updateEnemy(world){
+    updateEnemy(scene, world){
         if(this.awake == false){
             this.checkWakeRadius(world);
             this.moving = false;
@@ -97,56 +95,75 @@ export class Grunt extends Enemy {
 }
 
 export class Shooter extends Enemy {
-    constructor(scene, xPos, yPos, texture){
-        super(scene, xPos, yPos, texture);
+    constructor(scene, xPos, yPos, world){
+        super(scene, xPos, yPos, 'witch');
         this.awake = false;
         this.wakeRadius = 100;
         this.speed = 10;
         this.lastMoved = null;
+        this.lastShot = null;
+        this.shootDelay = 1500;
         this.moveDelay = 500;
         this.moving = false;
         this.hp = 5;
+        scene.physics.add.existing(this);
+
+        scene.physics.add.overlap(this, world.player_spr, world.player_spr.hurtPlayer, null, world.player_spr)
+
+
         this.setScale(0.5);
+        this.enemyBullets = scene.physics.add.group({classType: EnemyBullet, runChildUpdate: false});
+        this.enemyBullets.setX(xPos);
+        this.enemyBullets.setY(yPos);
+        scene.anims.createFromAseprite('witch');
+        scene.add.existing(this);
         
     }
 
-    shootAtPlayer(world){
+    shootAtPlayer(scene, world){
         
         this.setVelocity(0,0);
-        console.log("Fired Pistol");
+        console.log("Fired at player");
 
         var bullet = this.enemyBullets.get()
         if(bullet){
             bullet.fire(this.x, this.y, world.player_spr.x, world.player_spr.y);
 
             //Bullet Collide with Walls
-            scene.physics.add.collider(bullet, world.wallLayer, bullet.bulletHitWall, null, bullet);
+            //scene.physics.add.overlap(bullet, world.wallLayer, bullet.bulletHitWall, null, bullet);
+            //Bullet Collide with Player
+            scene.physics.add.overlap(bullet, world.player_spr, world.player_spr.hurtPlayer, null, world.player_spr);
+            scene.physics.add.overlap(bullet, world.player_spr, bullet.bulletHitPlayer, null, bullet);
 
         }
         this.moving = false;
-        this.lastMoved = scene.time.now;
     }
 
-    updateEnemy(world){
+    updateEnemy(scene, world){
         if(this.moving){
-            this.play('walk', true);
+            this.play('witchrun', true);
         } else {
-            this.play('idle', true);
+            this.play('witchidle', true);
         }
-        if(this.awake == false){
-            this.checkWakeRadius();
-        }else if(this.awake && scene.time.now > this.lastMoved + this.moveDelay){
-            if(this.moving){
-                this.moving = false;
-                this.setVelocity(0,0);
-                this.lastMoved = scene.time.now;
-            } else{
-                this.wander();
-                this.shootAtPlayer(world);
-            }
 
+
+        if(this.awake == false){
+            this.checkWakeRadius(world);
+        }else if(this.awake && (scene.time.now > this.lastShot + this.shootDelay)){
+            console.log("Shooting Player");
+            this.shootAtPlayer(scene, world);
+            this.shootAtPlayer(scene, world);
+            this.shootAtPlayer(scene, world);
+            this.lastShot = scene.time.now;
+        }else if(this.awake && (scene.time.now > this.lastMoved + this.moveDelay)){
+            console.log("Wandering");
+            this.wander();
+            this.lastMoved = scene.time.now;
         }
     }
+
+        
+    
     
 }
 
