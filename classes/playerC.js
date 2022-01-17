@@ -142,7 +142,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             if (this.weapon.mainWeapon != null){
                 this.weapon.mainWeapon.createPickup(world);
             }
-            //this.scene.add.existing(new WeaponPickup(this.scene, this.x, this.y, this.weapon.mainWeapon, this));
+
             
             //Add Weapon to Player
            
@@ -172,7 +172,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             if(this.weapon.offWeapon != null){
                 this.weapon.offWeapon.createPickup(world);
             }
-            //this.scene.add.existing(new WeaponPickup(this.scene, this.x, this.y, this.weapon.offWeapon));
+
             
             //Add Weapon to Player
             if(this.weapon.curWeapon == this.weapon.offWeapon){
@@ -232,6 +232,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             
         }
     }
+    
 
     hurtPlayer(){
         this.stats.curHP--;
