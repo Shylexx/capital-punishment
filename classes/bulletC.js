@@ -1,7 +1,7 @@
 export class Bullet extends Phaser.Physics.Arcade.Sprite{
     constructor(scene, x, y){
         super(scene, x, y, 'bullet');
-        this.speed = 200;
+        this.speed = 100;
         this.born = 0;
         this.direction = 0;
         this.xSpeed = 0;
@@ -11,11 +11,13 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
         this.setScale(0.2, 0.2, true);
         this.type = "standard";
         this.bounced = false;
+        scene.physics.add.existing(this);
     }//end of constructor
 
     fire(weapon, world){
         this.enableBody(true, weapon.x, weapon.y-5, true, true);
-        this.setBodySize(0.5,0.5);
+        this.body.setOffset(0, -10);
+        this.setBodySize(16,12);
         this.setScale(0.4);
         this.setRotation(Phaser.Math.Angle.Between(world.player_spr.x, world.player_spr.y, world.reticle_spr.x, world.reticle_spr.y));
         this.direction = Math.atan( (world.reticle_spr.x-this.x) / (world.reticle_spr.y-this.y));
@@ -38,9 +40,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
         this.bounced = false;
     }
 
-    bulletHitEnemy(bullet, enemy){
-        console.log('Bullet hit enemy');
-        enemy.hp--;
+    bulletHitEnemy(){
         this.disableBody(true,true);
     }
 
@@ -50,7 +50,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
 export class EnemyBullet extends Phaser.Physics.Arcade.Sprite{
     constructor(scene, x, y){
         super(scene, x, y, 'witchbolt');
-        this.speed = 200;
+        this.speed = 100;
         this.born = 0;
         this.direction = 0;
         this.xSpeed = 0;
@@ -58,13 +58,15 @@ export class EnemyBullet extends Phaser.Physics.Arcade.Sprite{
         this.setActive(true);
         this.setVisible(true);
         this.setScale(0.3, 0.3, true);
+        scene.physics.add.existing(this);
     }//end of constructor
 
     fire(shooterX, shooterY, targetX, targetY){
         this.enableBody(true, shooterX, shooterY+5, true, true);
-        this.setBodySize(0.6,0.6);
+        this.setBodySize(12,10);
         this.setScale(0.4);
         this.setDepth(6);
+        this.body.setOffset(4, 12);
         this.setRotation(Phaser.Math.Angle.Between(shooterX, shooterY, targetX, targetY));
         this.direction = Math.atan( (targetX-this.x) / (targetY-this.y));
 
@@ -82,12 +84,10 @@ export class EnemyBullet extends Phaser.Physics.Arcade.Sprite{
     }//end of fire()
 
     bulletHitWall(){
-        console.log("Bullet Hit Wall");
         this.disableBody(true, true);
     }
 
     bulletHitPlayer(){
-        console.log("Bullet Hit Player");
         this.disableBody(true, true);
     }
 

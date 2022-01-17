@@ -3,9 +3,23 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     constructor(scene, xPos, yPos, texture){
         super(scene, xPos, yPos, texture);
         this.awake = false;
-        this.wakeRadius = null;
-        this.speed = null;
+        this.wakeRadius = 100;
+        this.speed = 10;
+        this.lastMoved = null;
+        this.lastShot = null;
+        this.shootDelay = 1500;
+        this.moveDelay = 500;
+        this.moving = false;
         this.hp = 5;
+        scene.physics.add.existing(this);
+
+        this.setScale(0.5);
+        scene.add.existing(this);
+
+        this.setBodySize(16, 16);
+        this.setScale(0.5);
+        this.setDepth(3);
+        this.setOffset(8, 10);
         
     }
 
@@ -40,8 +54,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     }
 
-    HitEnemy(){
+    HurtEnemy(){
         this.hp--;
+        console.log(this.hp);
     }
 
 }
@@ -68,6 +83,12 @@ export class Grunt extends Enemy {
 
 
         scene.add.existing(this);
+
+
+        this.setBodySize(12, 16);
+        this.setScale(0.5);
+        this.setDepth(3);
+        this.setOffset(12, 12);
 
     }
 
@@ -117,20 +138,23 @@ export class Shooter extends Enemy {
         this.enemyBullets.setY(yPos);
         scene.anims.createFromAseprite('witch');
         scene.add.existing(this);
+
+        this.setBodySize(12, 16);
+        this.setScale(0.5);
+        this.setDepth(3);
+        this.setOffset(14, 20);
+        
         
     }
 
     shootAtPlayer(scene, world){
         
         this.setVelocity(0,0);
-        console.log("Fired at player");
 
         var bullet = this.enemyBullets.get()
         if(bullet){
             bullet.fire(this.x, this.y, world.player_spr.x, world.player_spr.y);
 
-            //Bullet Collide with Walls
-            //scene.physics.add.overlap(bullet, world.wallLayer, bullet.bulletHitWall, null, bullet);
             //Bullet Collide with Player
             scene.physics.add.overlap(bullet, world.player_spr, world.player_spr.hurtPlayer, null, world.player_spr);
             scene.physics.add.overlap(bullet, world.player_spr, bullet.bulletHitPlayer, null, bullet);
@@ -150,14 +174,12 @@ export class Shooter extends Enemy {
         if(this.awake == false){
             this.checkWakeRadius(world);
         }else if(this.awake && (scene.time.now > this.lastShot + this.shootDelay)){
-            console.log("Shooting Player");
             this.shootAtPlayer(scene, world);
-            this.shootAtPlayer(scene, world);
-            this.shootAtPlayer(scene, world);
+            //this.shootAtPlayer(scene, world);
+            //this.shootAtPlayer(scene, world);
             this.lastShot = scene.time.now;
         }else if(this.awake && (scene.time.now > this.lastMoved + this.moveDelay)){
-            console.log("Wandering");
-            this.wander();
+            //this.wander();
             this.lastMoved = scene.time.now;
         }
     }

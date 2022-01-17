@@ -33,7 +33,6 @@ export class Weapon extends Phaser.Physics.Arcade.Sprite{
                 this.flipY = false;
             }
             Phaser.Math.RotateTo(this, world.player_spr.x, world.player_spr.y+3, Phaser.Math.Angle.Between(world.player_spr.x, world.player_spr.y, world.reticle_spr.x, world.reticle_spr.y), 6);
-            this.body.reset(this.x, this.y);
         
 
             //Make Auto Weapons Fire without having to click again. Firerate is based on Per weapon firerate, and then offset by the players fire rate (Higher player fire rate = Faster Firing)
@@ -59,6 +58,10 @@ export class Weapon extends Phaser.Physics.Arcade.Sprite{
         return(this.weaponVars.inInv);
     }
 
+    HitEnemy(bullet, enemy){
+        
+    }
+
 }
 
 export class Pistol extends Weapon{
@@ -68,7 +71,6 @@ export class Pistol extends Weapon{
         this.weaponVars.name = "Pistol";
         this.weaponVars.fireMode = "single";
         this.weaponVars.fireRate = 300;
-        scene.physics.add.existing(this);
         scene.add.existing(this);
         this.setScale(0.3);
 
@@ -84,6 +86,16 @@ export class Pistol extends Weapon{
 
             //Bullet Collide with Walls
             scene.physics.add.collider(bullet, world.wallLayer, bullet.bulletHitWall, null, bullet);
+
+            //Bullet Collide with Enemies
+            for(let i = 0; i < world.enemyAry.length; i++){
+            scene.physics.add.overlap(bullet, world.enemyAry[i], function() { 
+                console.log("enemy damaged");
+                world.enemyAry[i].HurtEnemy();
+                bullet.bulletHitEnemy();
+            });
+            
+            }
 
             for(let i = 0; i < world.enemyAry.length; i++){
             scene.physics.add.overlap(bullet, world.enemyAry[i], bullet.bulletHitEnemy, null, bullet);
@@ -110,7 +122,6 @@ export class Rifle extends Weapon{
         this.weaponVars.name = "Rifle";
         this.weaponVars.fireMode = "auto";
         this.weaponVars.fireRate = 200;
-        scene.physics.add.existing(this);
         scene.add.existing(this);
         this.setScale(0.6, 0.35);
     }

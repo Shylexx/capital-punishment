@@ -42,6 +42,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.weapon.bulletGroup.setX(xPos);
         this.weapon.bulletGroup.setY(yPos);
 
+
+
         
         // had to do this to create a physics body
         scene.physics.add.existing(this);
@@ -53,6 +55,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
         // Add this to the scene to make it visible/active etc
         scene.add.existing(this);
+
+        this.setBodySize(16, 16);
+        this.setScale(0.5);
+        this.setDepth(3);
+        this.setOffset(8, 10);
 
 
     } // end of constructor()
@@ -236,7 +243,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     hurtPlayer(){
         this.stats.curHP--;
-        console.log(this.stats.curHP);
     }
 
 } // end of Player class

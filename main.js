@@ -5,7 +5,7 @@ import { WalkerGen } from "./procedural/worldgenerator.js";
 import {LevelGen} from "./procedural/levelgenerator.js";
 import * as WepSys from "./classes/weaponC.js";
 import * as WepPickup from "./classes/weaponPickups.js";
-import { Shooter } from "./classes/enemyC.js";
+import { Grunt,Shooter } from "./classes/enemyC.js";
 
 //import {Bullet} from "./classes/bulletC.js";
 //import * as Enemy from "./classes/enemyC.js";
@@ -63,7 +63,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false,
+            debug: true,
             pixelArt: true,
         }
     },
@@ -229,9 +229,6 @@ function create() {
 
     //Create Player and Reticle Sprites
     world.player_spr = new Player(this, world.spawnPosX, world.spawnPosY, 'janitor');
-    world.player_spr.setScale(0.5);
-    world.player_spr.setDepth(3);
-    world.player_spr.setBodySize(0.7, 0.7);
 
 
     world.reticle_spr =  this.physics.add.sprite(world.spawnPosX, world.spawnPosY, 'reticle');
@@ -239,10 +236,9 @@ function create() {
     world.reticle_spr.setScale(0.5);
 
     //WorldGenerator.makeSpawnPos(world);
-    var enemy = new Shooter(this, world.spawnPosX + 30, world.spawnPosY, world);
+    var enemy = new Grunt(this, world.spawnPosX + 30, world.spawnPosY, world);
     world.enemyAry.push(enemy);
     console.log(world.enemyAry[0]);
-    world.enemyAry[0].setBodySize(0.7, 0.7);
 
 
 
@@ -253,11 +249,9 @@ function create() {
     world.player_spr.weapon.curWeapon.setDepth(6);
     world.player_spr.weapon.curWeapon.weaponVars.curWeapon = true;
 
-    //var testGun = new WepSys.Rifle(this, world.spawnPosX + 50, world.spawnPosY);
+/*     var testDrop = new WepPickup.RiflePickup(this, world.spawnPosX + 50, world.spawnPosY, world);
 
-    var testDrop = new WepPickup.RiflePickup(this, world.spawnPosX + 50, world.spawnPosY, world);
-
-    var testDrop2 = new WepPickup.RiflePickup(this, world.spawnPosX + 20, world.spawnPosY, world);
+    var testDrop2 = new WepPickup.RiflePickup(this, world.spawnPosX + 20, world.spawnPosY, world); */
 
     //Adding Collider for Checking walls
     this.physics.add.collider(world.player_spr, world.wallLayer);
@@ -391,6 +385,7 @@ function create() {
     }, this);
 
 
+    console.log(world.enemyAry);
 
 
 
@@ -447,6 +442,68 @@ function buildMap(scene, world) {
 
 } //end of buildMap()
 
+
+
+
+function update() {
+    if(world.player_spr.stats.curHP < 1){
+        gameOver(this);
+    }
+
+    //Update UI
+    if(world.player_spr.overlapping != false){
+        world.pickupText.setText("SPACE for " + world.player_spr.overlapping.weaponStored.weaponVars.name).setVisible(true).setX(world.player_spr.x - world.player_spr.displayWidth/2).setY(world.player_spr.y-15);
+    }else{
+        world.pickupText.setVisible(false);
+    }
+
+    world.controlText.setX(this.cameras.main.midPoint.x + (this.cameras.main.displayWidth / 4)).setY(this.cameras.main.midPoint.y + (this.cameras.main.displayHeight / 4));
+
+    world.scoreText.setText("Score: "+ scoring.score+ "\nHigh Score: "+ scoring.highscore+"\nCurrent Wave: "+world.curWave+ "\n Highest Wave: "+ scoring.highWave + "\n\nHP: " + world.player_spr.stats.curHP).setX(this.cameras.main.midPoint.x - (this.cameras.main.displayWidth / 2.2)).setY(this.cameras.main.midPoint.y - (this.cameras.main.displayHeight / 2.2));   
+
+    world.player_spr.updatePlayer(world);
+
+    //checkBulletCollision();
+
+    CheckEnemyHP();
+
+    constrainReticle(this, world.reticle_spr); 
+
+    //make reticle move with player
+    if(world.player_spr.body.blocked.none) {
+        world.reticle_spr.setVelocityX(world.player_spr.body.velocity.x);
+        world.reticle_spr.setVelocityY(world.player_spr.body.velocity.y);
+    }
+
+
+    //Update Current Weapon
+    world.player_spr.weapon.curWeapon.updateMe(this,world);
+
+    //Update non current weapon location
+    if(world.player_spr.weapon.nonCurWeapon != null){
+        world.player_spr.weapon.nonCurWeapon.x = world.player_spr.x - 2;
+        world.player_spr.weapon.nonCurWeapon.y = world.player_spr.y;
+    }
+
+
+    updateCamera(this);
+
+    //Update Enemy Flip
+     for(let i = 0; i < world.enemyAry.length; i++){
+         world.enemyAry[i].updateEnemy(this, world);
+         if(world.enemyAry[i].awake == true){
+             if(world.player_spr.x < world.enemyAry[i].x){
+                 world.enemyAry[i].flipX = true;
+             } else{
+                 world.enemyAry[i].flipX = false;
+             }
+         }
+     }
+    
+    
+} // end of update()
+
+
 function CheckEnemyHP(){
     for(let enemy in world.enemyAry){
         if(world.enemyAry[enemy].hp < 1){
@@ -454,6 +511,7 @@ function CheckEnemyHP(){
             world.enemyAry[enemy].setActive(false).setVisible(false).destroy();
             world.enemyAry.splice(enemy, 1);
             scoring.score++;
+            console.log(world.enemyAry);
         }
 
     }
@@ -485,66 +543,5 @@ function gameOver(scene){
 }
 
 
-function update() {
-    if(world.player_spr.stats.curHP < 1){
-        gameOver(this);
-    }
-
-    //Update UI
-    if(world.player_spr.overlapping != false){
-        world.pickupText.setText("SPACE for " + world.player_spr.overlapping.weaponStored.weaponVars.name).setVisible(true).setX(world.player_spr.x - world.player_spr.displayWidth/2).setY(world.player_spr.y-15);
-    }else{
-        world.pickupText.setVisible(false);
-    }
-
-    world.controlText.setX(this.cameras.main.midPoint.x + (this.cameras.main.displayWidth / 4)).setY(this.cameras.main.midPoint.y + (this.cameras.main.displayHeight / 4));
-
-    world.scoreText.setText("Score: "+ scoring.score+ "\nHigh Score: "+ scoring.highscore+"\nCurrent Wave: "+world.curWave+ "\n Highest Wave: "+ scoring.highWave + "\n\nHP: " + world.player_spr.stats.curHP).setX(this.cameras.main.midPoint.x - (this.cameras.main.displayWidth / 2.2)).setY(this.cameras.main.midPoint.y - (this.cameras.main.displayHeight / 2.2));   
-
-    world.player_spr.updatePlayer(world);
-
-    //checkBulletCollision();
-
-    CheckEnemyHP();
-
-
-    // reset the player motion
-    //world.player_spr.setVelocity(0);
-
-    constrainReticle(this, world.reticle_spr); 
-
-    //make reticle move with player
-    if(world.player_spr.body.blocked.none) {
-        world.reticle_spr.setVelocityX(world.player_spr.body.velocity.x);
-        world.reticle_spr.setVelocityY(world.player_spr.body.velocity.y);
-    }
-
-
-    //Update Current Weapon
-    world.player_spr.weapon.curWeapon.updateMe(this,world);
-
-    //Update non current weapon location
-    if(world.player_spr.weapon.nonCurWeapon != null){
-        world.player_spr.weapon.nonCurWeapon.x = world.player_spr.x - 2;
-        world.player_spr.weapon.nonCurWeapon.y = world.player_spr.y;
-    }
-
-
-    updateCamera(this);
-
-    //Update Enemies
-     for(let i = 0; i < world.enemyAry.length; i++){
-         world.enemyAry[i].updateEnemy(this, world);
-         if(world.enemyAry[i].awake == true){
-             if(world.player_spr.x < world.enemyAry[i].x){
-                 world.enemyAry[i].flipX = true;
-             } else{
-                 world.enemyAry[i].flipX = false;
-             }
-         }
-     }
-    
-    
-} // end of update()
 
 let game = new Phaser.Game(config);

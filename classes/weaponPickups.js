@@ -20,8 +20,6 @@ export class WeaponPickup extends Phaser.Physics.Arcade.Sprite{
     overlapPlayer(){
          if (this.world.player_spr.overlapping != this){
         this.world.player_spr.overlapping = this;
-        console.log("Overlapped");
-        console.log("Overlapped Pickup: " +this.weaponStored.weaponVars.name);
         } 
     }
 
@@ -29,7 +27,6 @@ export class WeaponPickup extends Phaser.Physics.Arcade.Sprite{
     checkEndOverlap(player){
         if(!this.scene.physics.overlap(this, player)){
             player.clearOverlap();
-            console.log("Pickup Overlap Ended");
         }
     }
 
