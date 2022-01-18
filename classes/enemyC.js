@@ -38,6 +38,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
         }
     }
 
+    //Move in a random direction
     wander(){
         this.moving = true;
     var dir = Math.floor(Math.random() * (5 - 0) ) + 0;
@@ -62,6 +63,7 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
 }
 
+//Basic chase enemy
 export class Grunt extends Enemy {
     constructor(scene, xPos, yPos, world){
         super(scene, xPos, yPos, 'skeleton');
@@ -96,6 +98,7 @@ export class Grunt extends Enemy {
     }
 
     updateEnemy(scene, world){
+        //Check radius from player and only follows its behaviour if the enemy is awake
         if(this.awake == false){
             this.checkWakeRadius(world);
             this.moving = false;
@@ -151,6 +154,7 @@ export class Shooter extends Enemy {
         
     }
 
+    //Fire a bullet from group at the player
     shootAtPlayer(scene, world){
         
         this.setVelocity(0,0);
@@ -168,6 +172,7 @@ export class Shooter extends Enemy {
     }
 
     updateEnemy(scene, world){
+        //Play Animation based on
         if(this.moving){
             this.play('witchrun', true);
         } else {
@@ -175,6 +180,8 @@ export class Shooter extends Enemy {
         }
 
 
+        //AI Behaviour
+        //If woken up by player proximity, alternate between moving randomly and shooting at the player
         if(this.awake == false){
             this.checkWakeRadius(world);
         }else if(this.awake && (scene.time.now > this.lastShot + this.shootDelay)){
@@ -191,6 +198,7 @@ export class Shooter extends Enemy {
     
 }
 
+//Beginning foundation for a third enemy type
 export class Charger extends Enemy {
     constructor(scene, xPos, yPos, texture){
         super(scene, xPos, yPos, texture);

@@ -75,10 +75,13 @@ export class Pistol extends Weapon{
         this.setScale(0.3);
 
     }
+    //Semi Auto Firing
     fire(scene, world) {
 
+        //If delay has passed, allow firing again
     if (scene.time.now > this.weaponVars.lastFired + this.weaponVars.fireRate - world.player_spr.stats.weaponFireRate){
 
+        //Get first unused bullet from the bulletgroup
         var bullet = world.player_spr.weapon.bulletGroup.get()
         if(bullet){
             bullet.fire(this, world);
@@ -107,6 +110,7 @@ export class Pistol extends Weapon{
 
     }
 
+    //Spawn a pickup of this weapon
     createPickup(world){
         this.scene.add.existing(new WepPickup.PistolPickup(this.scene, world.player_spr.x, world.player_spr.y, world));
         this.setVisible(false).setActive(false).destroy();
@@ -125,10 +129,13 @@ export class Rifle extends Weapon{
         scene.add.existing(this);
         this.setScale(0.6, 0.35);
     }
+    //Fire Weapon
     fire(scene, world) {
 
+        //If delay has passed, allow firing again
         if (scene.time.now > this.weaponVars.lastFired + this.weaponVars.fireRate - world.player_spr.stats.weaponFireRate){
     
+            //Get first unused bullet from bullet group
             var bullet = world.player_spr.weapon.bulletGroup.get()
             if(bullet){
                 bullet.fire(this, world);
@@ -145,11 +152,6 @@ export class Rifle extends Weapon{
                     bullet.bulletHitEnemy();
                     }
                 });
-                
-                }
-    
-                for(let i = 0; i < world.enemyAry.length; i++){
-                scene.physics.add.overlap(bullet, world.enemyAry[i], bullet.bulletHitEnemy, null, bullet);
                 }
     
                 scene.cameras.main.shake(this.weaponVars.fireRate/2, 0.0001, true);
@@ -159,6 +161,7 @@ export class Rifle extends Weapon{
     
         }
 
+        //Create a pickup of the current weapon
     createPickup(world){
         this.scene.add.existing(new WepPickup.RiflePickup(this.scene, world.player_spr.x, world.player_spr.y, world));
         this.setVisible(false).setActive(false).destroy();

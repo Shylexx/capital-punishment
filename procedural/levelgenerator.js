@@ -3,16 +3,10 @@ import * as EnemySys from "../classes/enemyC.js";
 export class LevelGen {
     constructor(scene, world, WorldGenerator){
         this.WorldGenData = WorldGenerator;
-
     }
 
-    populateLevel(scene, world){
-        this.addEnemies(world);
-        //this.addDetail();
-    }
-
+    //Spawn New Enemies based on Current Wave
     spawnWave(scene, world){
-        console.log("Spawned Wave");
         for(let i = 0; i < (8 + world.curWave); i++){
             var toAdd = Math.floor(Math.random() * 2);
             var spawnLoc = this.getRandomFloor(world);
@@ -23,7 +17,6 @@ export class LevelGen {
             }
             
         }
-        console.log(world.enemyAry);
     }
 
     //Returns a random floor tile from the world array

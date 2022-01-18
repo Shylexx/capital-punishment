@@ -17,6 +17,7 @@ export class WeaponPickup extends Phaser.Physics.Arcade.Sprite{
 
     }
 
+    //Tell player sprite which pickup they are currently overlapping
     overlapPlayer(){
          if (this.world.player_spr.overlapping != this){
         this.world.player_spr.overlapping = this;
@@ -32,6 +33,7 @@ export class WeaponPickup extends Phaser.Physics.Arcade.Sprite{
 
 }
 
+//Pickup for Rifle Weapon
 export class RiflePickup extends WeaponPickup {
     constructor(scene, x, y, world){
         super(scene, x, y, world, "rifle");
@@ -52,6 +54,7 @@ export class RiflePickup extends WeaponPickup {
     }
 }
 
+//Pickup for Pistol Weapon
 export class PistolPickup extends WeaponPickup {
     constructor(scene, x, y, world){
         super(scene, x, y, world, "pistol");

@@ -14,6 +14,7 @@ export class Bullet extends Phaser.Physics.Arcade.Sprite{
         scene.physics.add.existing(this);
     }//end of constructor
 
+    //When fired, add velocity in the current direction at the target
     fire(weapon, world){
         this.enableBody(true, weapon.x, weapon.y-5, true, true);
         this.body.setOffset(0, -10);
@@ -61,6 +62,7 @@ export class EnemyBullet extends Phaser.Physics.Arcade.Sprite{
         scene.physics.add.existing(this);
     }//end of constructor
 
+    //Reveals and sends first available bullet in group directly at the target (The player)
     fire(shooterX, shooterY, targetX, targetY){
         this.enableBody(true, shooterX, shooterY+5, true, true);
         this.setBodySize(12,10);
@@ -83,10 +85,12 @@ export class EnemyBullet extends Phaser.Physics.Arcade.Sprite{
         this.born = 0; // Time since new bullet spawned
     }//end of fire()
 
+    //Disable the bullet when it hits a wall
     bulletHitWall(){
         this.disableBody(true, true);
     }
 
+    //Disable the bullet when it hits an enemy
     bulletHitPlayer(){
         this.disableBody(true, true);
     }

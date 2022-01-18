@@ -31,11 +31,8 @@ export class WalkerGen {
         //Get Grid Size
         this.roomHeight = world.ROWS;
         this.roomWidth = world.COLUMNS;
-        //Set Grid to World Defined Size
-       // this.genData.data = world.l1Item_ary.splice(0);
 
-
-
+        //Create Empty Array of World Size
         for(let columnIdx = 0; columnIdx < this.roomWidth; columnIdx++){
             this.genData.l1walker_ary.push([]);
             this.genData.l1backg_ary.push([]);
@@ -168,6 +165,7 @@ export class WalkerGen {
     } 
 
 
+    //Count the amount of floor space in the world array
     NumberOfFloors(){
         let floorCount = 0;
         for (let rowIdx = 0; rowIdx < this.genData.l1walker_ary.length; rowIdx++) {
@@ -180,6 +178,7 @@ export class WalkerGen {
         return floorCount;
     }
 
+    //Choose a corner of the map and randomly select it as the player's spawn
     makeSpawnPos(world){
         let corner = Math.floor(Math.random() * 4);
         if (corner == 0){
@@ -224,19 +223,6 @@ export class WalkerGen {
         world.spawnPosY = world.spawnPosY * 16 + 8
     }
 
-    RandomDirection(){
-        let direction = Math.floor(Math.random() * 4);
-        switch (direction){
-            case 0:
-                return "left";
-            case 1:
-                return "up";
-            case 2:
-                return "right";
-            case 3: 
-                return "down";
-        }
-    }
 
      //Generate the World with the walkers. Requires a World Config.
      genWorld(world){
@@ -244,12 +230,12 @@ export class WalkerGen {
         this.CreateFloors(world.FLOORPERCENT);
         this.CreateWalls();
         return(this.genData.l1walker_ary);
-
     }
        
 
 } //End of Class
 
+//Walker object that moves around the array to create the game world
 export class Walker{
     constructor(x, y){
     this.xPos = x;
@@ -282,6 +268,7 @@ export class Walker{
     }
 }
 
+//An array of walker objects for the World Generator to use to manage multiple walkers
 export class WalkerList {
     constructor(){
         this.walkers = []

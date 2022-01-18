@@ -5,12 +5,6 @@ import { WalkerGen } from "./procedural/worldgenerator.js";
 import {LevelGen} from "./procedural/levelgenerator.js";
 import * as WepSys from "./classes/weaponC.js";
 import * as WepPickup from "./classes/weaponPickups.js";
-import { Grunt,Shooter } from "./classes/enemyC.js";
-
-//import {Bullet} from "./classes/bulletC.js";
-//import * as Enemy from "./classes/enemyC.js";
-//import {WeaponPickup} from "./classes/weaponPickups.js";
-
 
 let world = {
     health_txt: null,
@@ -86,13 +80,13 @@ let config = {
     pixelArt:true,
 };
 
+//Create Storage Setup for Scores
 scoring.highscore = localStorage.getItem(scoring.scoreStorage) == null ? 0 :
 localStorage.getItem(scoring.scoreStorage);
-
 scoring.highWave = localStorage.getItem(scoring.waveStorage) == null ? 0 :
 localStorage.getItem(scoring.waveStorage);
 
-
+//Create Generators for Map and for Level Content
 let WorldGenerator = new WalkerGen((world.ROWS/2),(world.COLUMNS/2));
 let LevelGenerator = new LevelGen(this, world, WorldGenerator);
 
@@ -130,9 +124,8 @@ function constrainReticle(scene, reticle)
 }
 
 
-
+//Set Camera location to between Player and reticle
 function updateCamera(scene){
-
 
     //Smooth Camera System
 
@@ -155,13 +148,13 @@ function updateCamera(scene){
     
 }
 
+//Check enemies to see if they are dead
 function CheckEnemyHP(scene){
     for(let i = 0; i < world.enemyAry.length; i++){
         var enemy = world.enemyAry[i];
         //Check Alive enemies' hp, If lower than 1 then kill enemy
         if(enemy.alive == true){
             if(enemy.hp < 1){
-                console.log("Enemy dead");
                 //Random chance to drop weapon
                 if(Math.random() < 0.4){
                     if(Math.random() < 0.5){
@@ -174,13 +167,13 @@ function CheckEnemyHP(scene){
                 enemy.disableBody(true, true);
                 enemy.alive = false;
                 scoring.score++;
-                console.log(world.enemyAry);
             }
         }
 
     }
 }
 
+//If All enemies are dead, spawn a new wave
 function CheckWaveOver(scene, enemiesLeft){
     if(enemiesLeft < 1){
         //Spawn Next Wave
@@ -204,6 +197,7 @@ function CheckWaveOver(scene, enemiesLeft){
     }
 }
 
+//Save Scores to Local Storage
 function SaveStats(){
     //Init Score Saving
     scoring.highscore = Math.max(scoring.score, scoring.highscore);
@@ -213,9 +207,10 @@ function SaveStats(){
     localStorage.setItem(scoring.waveStorage, scoring.highWave);
 }
 
+//End Game
 function gameOver(scene){
     SaveStats();
-    console.log("Game Over");
+
     world.gameOverText.setText("Game Over\n Refresh to Try Again").setX(scene.cameras.main.midPoint.x - scene.cameras.main.displayWidth / 3).setY(scene.cameras.main.midPoint.y).setVisible(true);
     game.destroy();
 }
@@ -280,24 +275,25 @@ function preload() {
 } //end of preload()
 
 function create() {
+
+    //Add Keys for Input
     world.moveKeys = this.input.keyboard.addKeys('W,A,S,D,E');
     
-    //Create World
+    //Create and Render World
     world.wallAry = WorldGenerator.genWorld(world);
     WorldGenerator.makeSpawnPos(world);
     buildMap(this, world);
-    //LevelGenerator.populateLevel(this, world);
     
-    // add camera
+    // add camera boundaries
     this.cameras.main.setBounds(0, 0, world.map.widthInPixels, world.map.heightInPixels);
     // set physics boundaries
     this.physics.world.setBounds(0, 0, world.map.widthInPixels, world.map.heightInPixels);
 
 
-    //Create Player and Reticle Sprites
+    //Create Player
     world.player_spr = new Player(this, world.spawnPosX, world.spawnPosY, 'janitor');
 
-
+    //Create Aiming Reticle
     world.reticle_spr =  this.physics.add.sprite(world.spawnPosX, world.spawnPosY, 'reticle');
     world.reticle_spr.setDepth(10);
     world.reticle_spr.setScale(0.5);
@@ -311,18 +307,11 @@ function create() {
     world.player_spr.weapon.curWeapon.setDepth(6);
     world.player_spr.weapon.curWeapon.weaponVars.curWeapon = true;
 
-/*     var testDrop = new WepPickup.RiflePickup(this, world.spawnPosX + 50, world.spawnPosY, world);
-
-    var testDrop2 = new WepPickup.RiflePickup(this, world.spawnPosX + 20, world.spawnPosY, world); */
-
     //Adding Collider for Checking walls
     this.physics.add.collider(world.player_spr, world.wallLayer);
     this.physics.add.collider(world.player_spr, world.groundLayer);
 
-    
-
     //Creating Camera and having it follow the player
-    //this.cameras.main.startFollow(world.player_spr, true, 0.1, 0.1);
     this.cameras.main.setRoundPixels(true);
     this.cameras.main.zoom = 7;
 
@@ -417,7 +406,7 @@ function create() {
 
     //Spawn initial wave
     LevelGenerator.spawnWave(this, world);
-    //Add Enemy Colliders
+    //Add Enemy Colliders to first wave
     for(let i = 0; i < world.enemyAry.length; i++){
         this.physics.add.collider(world.enemyAry[i], world.wallLayer);
         this.physics.add.collider(world.enemyAry[i], world.groundLayer);
@@ -433,16 +422,6 @@ function create() {
 
 
 function buildMap(scene, world) {
-    /*
-    * Layer Depth Reference
-    * Ground Layer: Default
-    * WallLayer: 6
-    * WallBorderLayer: 5
-    * AboveLayer: 10
-    * PlayerSpr: 3
-    * ReticleSpr: 10
-    * 
-    */
     // Initialise the tilemap
     world.map = scene.make.tilemap({
         data: WorldGenerator.genData.l1backg_ary , tileWidth: 16, tileHeight: 16
@@ -484,6 +463,8 @@ function buildMap(scene, world) {
 
 
 function update() {
+
+    //Check Game State for Game Over
     if(world.player_spr.stats.curHP < 1){
         gameOver(this);
     }
@@ -502,19 +483,15 @@ function update() {
     }else{
         world.pickupText.setVisible(false);
     }
-
     world.controlText.setX(this.cameras.main.midPoint.x + (this.cameras.main.displayWidth / 4)).setY(this.cameras.main.midPoint.y + (this.cameras.main.displayHeight / 4));
-
     world.scoreText.setText("Score: "+ scoring.score+ "\nHigh Score: "+ scoring.highscore+"\nCurrent Wave: "+world.curWave+ "\n Highest Wave: "+ scoring.highWave + "\n\nHP: " + world.player_spr.stats.curHP+ "\nEnemies Left: "+world.enemiesLeft).setX(this.cameras.main.midPoint.x - (this.cameras.main.displayWidth / 2.2)).setY(this.cameras.main.midPoint.y - (this.cameras.main.displayHeight / 2.2));   
-
     world.player_spr.updatePlayer(world);
 
-    //checkBulletCollision();
-
+    //Game State Checks
     CheckEnemyHP(this);
-
     CheckWaveOver(this, world.enemiesLeft);
 
+    //Keep Reticle
     constrainReticle(this, world.reticle_spr); 
 
     //make reticle move with player
@@ -533,7 +510,7 @@ function update() {
         world.player_spr.weapon.nonCurWeapon.y = world.player_spr.y;
     }
 
-
+    //Set Camera Location based on reticle and player location
     updateCamera(this);
 
     //Update Enemy Flip

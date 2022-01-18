@@ -25,6 +25,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         bulletGroup: null,
     }
 
+    //Obsolete array of the player's current items
     items = {
         itemInv: [],
     }
@@ -82,6 +83,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             this.play('walk', true);
         }
         
+        //Movement
         if (world.moveKeys.A.isDown) {
             this.moveLeft();
         }  else if (world.moveKeys.D.isDown) {
@@ -114,35 +116,26 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     
     //movement methods
     moveLeft() {
-        //this.anims.play('walkLeft',true)
         this.setVelocityX(-this.stats.moveSpeed);
-        //this.x -= 1
     } // end of moveLeft()
 
     moveRight() {
-        //this.anims.play('walkRight',true)
         this.setVelocityX(this.stats.moveSpeed);
-        //this.x += 1
     } // end of moveRight()
 
     moveUp() {
-       // this.anims.play('walkUp',true)
         this.setVelocityY(-this.stats.moveSpeed);
-        //this.y -= 1
     } // end of moveUp()
     moveDown() {
-        //this.anims.play('walkDown', true)
         this.setVelocityY(this.stats.moveSpeed);
-        //this.y += 1
     } // end of moveDown()
 
     standStill() {
-       // this.setFrame(0)
         this.setVelocity(0, 0)
 
     } //end of standStill()
 
-
+    //Pick up weapon from ground Pickup sprite
     pickupWeapon(world){
 
         var pickup = this.overlapping;
@@ -227,6 +220,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         return this.weapon.firing;
     }
 
+    //Swap current to main or off weapon
     swapWeapons(){
         if(this.weapon.nonCurWeapon != null){
             this.weapon.firing = false;
@@ -243,7 +237,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         }
     }
     
-
+    //Decrement the player's HP
     hurtPlayer(){
         this.stats.curHP--;
     }
