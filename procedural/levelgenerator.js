@@ -34,13 +34,10 @@ export class LevelGen {
         while(true){
             x = Math.floor(Math.random() * (world.COLUMNS));
             y = Math.floor(Math.random() * (world.ROWS));
-            console.log(x);
-            console.log(y);
             if (world.wallAry[x][y] == 0){
                 break;
             }
         }
-        console.log("X: " +x+ " Y: "+y);
         return {spawnX: x,
         spawnY: y};
     }

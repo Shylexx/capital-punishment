@@ -102,6 +102,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         //If currently on a weapon pickup, check for when we leave the pickup
         if(this.overlapping != false){
             this.overlapping.checkEndOverlap(this);
+            if(world.moveKeys.E.isDown){
+                this.pickupWeapon(world);
+            }
         }
 
     
@@ -164,7 +167,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
                     this.weapon.nonCurWeapon.setDepth(2);
                     this.weapon.nonCurWeapon.rotation = -90;
                 }
-                this.weapon.mainWeapon.enableBody(false,this.x,this.y.true,true).setActive(true).setVisible(true);
+                this.weapon.mainWeapon.setActive(true).setVisible(true);
         
             
             
@@ -192,7 +195,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
                 this.weapon.nonCurWeapon.rotation = -90;
             }
             this.weapon.offWeapon = pickup.weaponStored;
-            this.weapon.offWeapon.enableBody(false,this.x,this.y, true, true).setActive(true).setVisible(true);
+            this.weapon.offWeapon.setActive(true).setVisible(true);
 
             //Destroy Pickup
             pickup.disableBody(true, true).destroy();

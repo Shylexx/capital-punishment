@@ -46,6 +46,8 @@ let world = {
     gameOverText: null,
 
     wallAry: null,
+
+    enemiesLeft: null,
 }; // end of world
 
 let scoring = {
@@ -153,6 +155,71 @@ function updateCamera(scene){
     
 }
 
+function CheckEnemyHP(scene){
+    for(let i = 0; i < world.enemyAry.length; i++){
+        var enemy = world.enemyAry[i];
+        //Check Alive enemies' hp, If lower than 1 then kill enemy
+        if(enemy.alive == true){
+            if(enemy.hp < 1){
+                console.log("Enemy dead");
+                //Random chance to drop weapon
+                if(Math.random() < 0.4){
+                    if(Math.random() < 0.5){
+                        scene.add.existing(new WepPickup.RiflePickup(scene, enemy.x, enemy.y, world));
+                    }else{
+                        scene.add.existing(new WepPickup.PistolPickup(scene, enemy.x, enemy.y, world));
+
+                    }
+                }
+                enemy.disableBody(true, true);
+                enemy.alive = false;
+                scoring.score++;
+                console.log(world.enemyAry);
+            }
+        }
+
+    }
+}
+
+function CheckWaveOver(scene, enemiesLeft){
+    if(enemiesLeft < 1){
+        //Spawn Next Wave
+
+        scoring.wave++;
+        world.curWave++;
+        SaveStats();
+        //Clear Enemy Array
+        for(let i; i < world.enemyAry; i++){
+            world.enemyAry[i].destroy()
+        }
+        world.enemyAry = [];
+        LevelGenerator.spawnWave(scene, world);
+        //Add Enemy Colliders
+        for(let i = 0; i < world.enemyAry.length; i++){
+        scene.physics.add.collider(world.enemyAry[i], world.wallLayer);
+        scene.physics.add.collider(world.enemyAry[i], world.groundLayer);
+    }
+    
+        
+    }
+}
+
+function SaveStats(){
+    //Init Score Saving
+    scoring.highscore = Math.max(scoring.score, scoring.highscore);
+    localStorage.setItem(scoring.scoreStorage, scoring.highscore);
+
+    scoring.highWave = Math.max(scoring.wave, scoring.highWave);
+    localStorage.setItem(scoring.waveStorage, scoring.highWave);
+}
+
+function gameOver(scene){
+    SaveStats();
+    console.log("Game Over");
+    world.gameOverText.setText("Game Over\n Refresh to Try Again").setX(scene.cameras.main.midPoint.x - scene.cameras.main.displayWidth / 3).setY(scene.cameras.main.midPoint.y).setVisible(true);
+    game.destroy();
+}
+
 
 
 
@@ -213,7 +280,7 @@ function preload() {
 } //end of preload()
 
 function create() {
-    world.moveKeys = this.input.keyboard.addKeys('W,A,S,D');
+    world.moveKeys = this.input.keyboard.addKeys('W,A,S,D,E');
     
     //Create World
     world.wallAry = WorldGenerator.genWorld(world);
@@ -234,10 +301,6 @@ function create() {
     world.reticle_spr =  this.physics.add.sprite(world.spawnPosX, world.spawnPosY, 'reticle');
     world.reticle_spr.setDepth(10);
     world.reticle_spr.setScale(0.5);
-
-    /* var enemy = new Grunt(this, world.spawnPosX + 30, world.spawnPosY, world);
-    world.enemyAry.push(enemy);
-    console.log(world.enemyAry[0]); */
 
 
 
@@ -273,7 +336,7 @@ function create() {
     world.pickupText.setDepth(3).setScale(0.15).setVisible(false);
 
     //Create UI Text for Controls
-    world.controlText = this.add.text(this.cameras.main.midPoint.x + (this.cameras.main.displayWidth / 4),this.cameras.main.midPoint.y + (this.cameras.main.displayHeight / 4), "Controls:  \nWASD To Move\n Space to Pick Up Weapon\n Q to swap weapons\n Left Mouse to Fire", {
+    world.controlText = this.add.text(this.cameras.main.midPoint.x + (this.cameras.main.displayWidth / 4),this.cameras.main.midPoint.y + (this.cameras.main.displayHeight / 4), "Controls:  \nWASD To Move\n Space to Swap Weapon\n Q to Swap Weapons\n E To Pick up Weapon \n Left Mouse to Fire", {
         fontFamily: 'KenneyPixel',
         fontSize: '40px',
     });
@@ -294,25 +357,13 @@ function create() {
     world.gameOverText.setDepth(3).setAlign("center").setScale(0.5).setColor("white").setVisible(false);
 
 
-    //E key down for picking up weapons
-    this.input.keyboard.on('keydown-E', function (event) {
 
-        event.stopPropagation();
-
-        if(world.player_spr.overlapping != false){
-            world.player_spr.pickupWeapon(world);
-        }
-
-    });
-
-    //Space bar down for picking up weapons
+    //Space bar down for swapping weapons
     this.input.keyboard.on('keydown-SPACE', function (event) {
 
         event.stopPropagation();
 
-        if(world.player_spr.overlapping != false){
-            world.player_spr.pickupWeapon(world);
-        }
+        world.player_spr.swapWeapons();
 
     });
 
@@ -364,8 +415,15 @@ function create() {
       
     }, this);
 
+    //Spawn initial wave
+    LevelGenerator.spawnWave(this, world);
+    //Add Enemy Colliders
+    for(let i = 0; i < world.enemyAry.length; i++){
+        this.physics.add.collider(world.enemyAry[i], world.wallLayer);
+        this.physics.add.collider(world.enemyAry[i], world.groundLayer);
+    }
 
-    console.log(world.enemyAry);
+
 
 
 
@@ -430,26 +488,32 @@ function update() {
         gameOver(this);
     }
 
+    //Calculate remaining enemies
+    world.enemiesLeft = 0;
+    for(let i = 0; i < world.enemyAry.length; i++){
+        if(world.enemyAry[i].alive == true){
+            world.enemiesLeft++;
+        }
+    }
+
     //Update UI
     if(world.player_spr.overlapping != false){
-        world.pickupText.setText("SPACE for " + world.player_spr.overlapping.weaponStored.weaponVars.name).setVisible(true).setX(world.player_spr.x - world.player_spr.displayWidth/2).setY(world.player_spr.y-15);
+        world.pickupText.setText("E for " + world.player_spr.overlapping.weaponStored.weaponVars.name).setVisible(true).setX(world.player_spr.x - world.player_spr.displayWidth/2).setY(world.player_spr.y-15);
     }else{
         world.pickupText.setVisible(false);
     }
 
     world.controlText.setX(this.cameras.main.midPoint.x + (this.cameras.main.displayWidth / 4)).setY(this.cameras.main.midPoint.y + (this.cameras.main.displayHeight / 4));
 
-    world.scoreText.setText("Score: "+ scoring.score+ "\nHigh Score: "+ scoring.highscore+"\nCurrent Wave: "+world.curWave+ "\n Highest Wave: "+ scoring.highWave + "\n\nHP: " + world.player_spr.stats.curHP).setX(this.cameras.main.midPoint.x - (this.cameras.main.displayWidth / 2.2)).setY(this.cameras.main.midPoint.y - (this.cameras.main.displayHeight / 2.2));   
+    world.scoreText.setText("Score: "+ scoring.score+ "\nHigh Score: "+ scoring.highscore+"\nCurrent Wave: "+world.curWave+ "\n Highest Wave: "+ scoring.highWave + "\n\nHP: " + world.player_spr.stats.curHP+ "\nEnemies Left: "+world.enemiesLeft).setX(this.cameras.main.midPoint.x - (this.cameras.main.displayWidth / 2.2)).setY(this.cameras.main.midPoint.y - (this.cameras.main.displayHeight / 2.2));   
 
     world.player_spr.updatePlayer(world);
 
     //checkBulletCollision();
 
-    CheckEnemyHP();
+    CheckEnemyHP(this);
 
-    CheckWaveOver(this);
-
-    console.log(world.enemyAry[0].x);
+    CheckWaveOver(this, world.enemiesLeft);
 
     constrainReticle(this, world.reticle_spr); 
 
@@ -474,6 +538,7 @@ function update() {
 
     //Update Enemy Flip
      for(let i = 0; i < world.enemyAry.length; i++){
+         if(world.enemyAry[i].alive == true){
          world.enemyAry[i].updateEnemy(this, world);
          if(world.enemyAry[i].awake == true){
              if(world.player_spr.x < world.enemyAry[i].x){
@@ -482,64 +547,14 @@ function update() {
                  world.enemyAry[i].flipX = false;
              }
          }
+        }
      }
     
     
 } // end of update()
 
 
-function CheckEnemyHP(){
-    for(let enemy in world.enemyAry){
-        if(world.enemyAry[enemy].hp < 1){
-            console.log("Enemy dead");
-            //Random chance to drop weapon
-            if(Math.random() < 0){
-                if(Math.random() < 0.5){
-                    this.add.existing(new WepPickup.RiflePickup(this, world.enemyAry[enemy].x, world.enemyAry[enemy].y, world));
-                }else{
-                    this.add.existing(new WepPickup.PistolPickup(this, world.enemyAry[enemy].x, world.enemyAry[enemy].y, world));
 
-                }
-            }
-            world.enemyAry[enemy].setActive(false).setVisible(false).destroy();
-            world.enemyAry.splice(enemy, 1);
-            scoring.score++;
-            console.log(world.enemyAry);
-        }
-
-    }
-}
-
-function CheckWaveOver(scene){
-    if(world.enemyAry.length < 1){
-        scoring.wave++;
-        world.curWave++;
-        SaveStats();
-        LevelGenerator.spawnWave(scene, world);
-        //Add Enemy Colliders
-        for(let i = 0; i < world.enemyAry.length; i++){
-        scene.physics.add.collider(world.enemyAry[i], world.wallLayer);
-        scene.physics.add.collider(world.enemyAry[i], world.groundLayer);
-    }
-        
-    }
-}
-
-function SaveStats(){
-    //Init Score Saving
-    scoring.highscore = Math.max(scoring.score, scoring.highscore);
-    localStorage.setItem(scoring.scoreStorage, scoring.highscore);
-
-    scoring.highWave = Math.max(scoring.wave, scoring.highWave);
-    localStorage.setItem(scoring.waveStorage, scoring.highWave);
-}
-
-function gameOver(scene){
-    SaveStats();
-    console.log("Game Over");
-    world.gameOverText.setText("Game Over\n Refresh to Try Again").setX(scene.cameras.main.midPoint.x - scene.cameras.main.displayWidth / 3).setY(scene.cameras.main.midPoint.y).setVisible(true);
-    game.destroy();
-}
 
 
 

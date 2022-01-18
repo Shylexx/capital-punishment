@@ -90,7 +90,6 @@ export class Pistol extends Weapon{
             //Bullet Collide with Enemies
             for(let i = 0; i < world.enemyAry.length; i++){
             scene.physics.add.overlap(bullet, world.enemyAry[i], function() { 
-                console.log("enemy damaged");
                 world.enemyAry[i].HurtEnemy();
                 bullet.bulletHitEnemy();
             });
@@ -108,8 +107,9 @@ export class Pistol extends Weapon{
 
     }
 
-    createPickup(){
-        this.scene.add.existing(new WepPickup.PistolPickup(this.scene, this.x, this.y, world));
+    createPickup(world){
+        this.scene.add.existing(new WepPickup.PistolPickup(this.scene, world.player_spr.x, world.player_spr.y, world));
+        this.setVisible(false).setActive(false).destroy();
     }
 
 
@@ -125,22 +125,39 @@ export class Rifle extends Weapon{
         scene.add.existing(this);
         this.setScale(0.6, 0.35);
     }
-    fire(scene, world){
+    fire(scene, world) {
 
-        var bullet = world.player_spr.weapon.bulletGroup.get()
-        if(bullet){
-            bullet.fire(this, world);
-            bullet.body.bounce.set(1);
-            
-            //Bullet Collide with Walls
-
-            scene.physics.add.collider(bullet, world.wallLayer, bullet.bulletHitWall, null, bullet);
-
-
-            scene.cameras.main.shake(this.weaponVars.fireRate/2, 0.0001, true);
+        if (scene.time.now > this.weaponVars.lastFired + this.weaponVars.fireRate - world.player_spr.stats.weaponFireRate){
+    
+            var bullet = world.player_spr.weapon.bulletGroup.get()
+            if(bullet){
+                bullet.fire(this, world);
+    
+    
+                //Bullet Collide with Walls
+                scene.physics.add.collider(bullet, world.wallLayer, bullet.bulletHitWall, null, bullet);
+    
+                //Bullet Collide with Enemies
+                for(let i = 0; i < world.enemyAry.length; i++){
+                scene.physics.add.overlap(bullet, world.enemyAry[i], function() { 
+                    if(world.enemyAry.length > 0){
+                    world.enemyAry[i].HurtEnemy();
+                    bullet.bulletHitEnemy();
+                    }
+                });
+                
+                }
+    
+                for(let i = 0; i < world.enemyAry.length; i++){
+                scene.physics.add.overlap(bullet, world.enemyAry[i], bullet.bulletHitEnemy, null, bullet);
+                }
+    
+                scene.cameras.main.shake(this.weaponVars.fireRate/2, 0.0001, true);
+            }
+            this.weaponVars.lastFired = scene.time.now;
+        }   
+    
         }
-
-    }
 
     createPickup(world){
         this.scene.add.existing(new WepPickup.RiflePickup(this.scene, world.player_spr.x, world.player_spr.y, world));

@@ -55,8 +55,9 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     }
 
     HurtEnemy(){
+        if(this.hp > 0){
         this.hp--;
-        console.log(this.hp);
+        }
     }
 
 }
@@ -70,6 +71,8 @@ export class Grunt extends Enemy {
         this.lastMoved = null;
 
         this.hp = 5;
+
+        this.alive = true;
 
         scene.physics.add.existing(this);
         this.setScale(0.6);
@@ -127,6 +130,7 @@ export class Shooter extends Enemy {
         this.moveDelay = 500;
         this.moving = false;
         this.hp = 5;
+        this.alive = true;
         scene.physics.add.existing(this);
 
         scene.physics.add.overlap(this, world.player_spr, world.player_spr.hurtPlayer, null, world.player_spr)

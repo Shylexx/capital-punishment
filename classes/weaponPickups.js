@@ -35,7 +35,8 @@ export class WeaponPickup extends Phaser.Physics.Arcade.Sprite{
 export class RiflePickup extends WeaponPickup {
     constructor(scene, x, y, world){
         super(scene, x, y, world, "rifle");
-        this.weaponStored = new WepSys.Rifle(scene, x, y).disableBody(true, true);
+        this.weaponStored = new WepSys.Rifle(scene, x, y);
+        this.weaponStored.setVisible(false);
 
         this.rotation = Math.floor(Math.random() * 360);
 
@@ -46,13 +47,16 @@ export class RiflePickup extends WeaponPickup {
         scene.physics.add.overlap(this, world.player_spr, this.overlapPlayer, null, this);
 
         scene.add.existing(this);
+
+        this.setScale(0.5);
     }
 }
 
 export class PistolPickup extends WeaponPickup {
     constructor(scene, x, y, world){
         super(scene, x, y, world, "pistol");
-        this.weaponStored = new WepSys.Pistol(scene, x, y).disableBody(true, true);
+        this.weaponStored = new WepSys.Pistol(scene, x, y);
+        this.weaponStored.setVisible(false);
 
         this.rotation = Math.floor(Math.random() * 360);
 
@@ -62,5 +66,7 @@ export class PistolPickup extends WeaponPickup {
         scene.physics.add.overlap(this, world.player_spr, this.overlapPlayer, null, this);
 
         scene.add.existing(this);
+
+        this.setScale(0.5);
     }
 }
