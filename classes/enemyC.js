@@ -175,11 +175,9 @@ export class Shooter extends Enemy {
             this.checkWakeRadius(world);
         }else if(this.awake && (scene.time.now > this.lastShot + this.shootDelay)){
             this.shootAtPlayer(scene, world);
-            //this.shootAtPlayer(scene, world);
-            //this.shootAtPlayer(scene, world);
             this.lastShot = scene.time.now;
         }else if(this.awake && (scene.time.now > this.lastMoved + this.moveDelay)){
-            //this.wander();
+            this.wander();
             this.lastMoved = scene.time.now;
         }
     }

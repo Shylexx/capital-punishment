@@ -243,6 +243,7 @@ export class WalkerGen {
         this.Setup(world);
         this.CreateFloors(world.FLOORPERCENT);
         this.CreateWalls();
+        return(this.genData.l1walker_ary);
 
     }
        

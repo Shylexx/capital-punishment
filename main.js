@@ -44,6 +44,8 @@ let world = {
     controlText: null,
     scoreText: null,
     gameOverText: null,
+
+    wallAry: null,
 }; // end of world
 
 let scoring = {
@@ -63,7 +65,7 @@ let config = {
     physics: {
         default: 'arcade',
         arcade: {
-            debug: true,
+            debug: false,
             pixelArt: true,
         }
     },
@@ -151,9 +153,7 @@ function updateCamera(scene){
     
 }
 
-function addEnemy(enemy){
-    world.enemyAry.push(enemy);
-}
+
 
 
 function preload() {
@@ -216,7 +216,7 @@ function create() {
     world.moveKeys = this.input.keyboard.addKeys('W,A,S,D');
     
     //Create World
-    WorldGenerator.genWorld(world);
+    world.wallAry = WorldGenerator.genWorld(world);
     WorldGenerator.makeSpawnPos(world);
     buildMap(this, world);
     //LevelGenerator.populateLevel(this, world);
@@ -235,10 +235,9 @@ function create() {
     world.reticle_spr.setDepth(10);
     world.reticle_spr.setScale(0.5);
 
-    //WorldGenerator.makeSpawnPos(world);
-    var enemy = new Grunt(this, world.spawnPosX + 30, world.spawnPosY, world);
+    /* var enemy = new Grunt(this, world.spawnPosX + 30, world.spawnPosY, world);
     world.enemyAry.push(enemy);
-    console.log(world.enemyAry[0]);
+    console.log(world.enemyAry[0]); */
 
 
 
@@ -257,11 +256,7 @@ function create() {
     this.physics.add.collider(world.player_spr, world.wallLayer);
     this.physics.add.collider(world.player_spr, world.groundLayer);
 
-    //Add Enemy Colliders
-    for(let i = 0; i < world.enemyAry.length; i++){
-        this.physics.add.collider(world.enemyAry[i], world.wallLayer);
-        this.physics.add.collider(world.enemyAry[i], world.groundLayer);
-    }
+    
 
     //Creating Camera and having it follow the player
     //this.cameras.main.startFollow(world.player_spr, true, 0.1, 0.1);
@@ -304,24 +299,9 @@ function create() {
 
         event.stopPropagation();
 
-        scoring.score++;
-        SaveStats();
-        /* if(world.player_spr.overlapping != false){
+        if(world.player_spr.overlapping != false){
             world.player_spr.pickupWeapon(world);
-        } */
-
-    });
-
-    //E key down for picking up weapons
-    this.input.keyboard.on('keydown-F', function (event) {
-
-        event.stopPropagation();
-
-        scoring.wave++;
-        SaveStats();
-        /* if(world.player_spr.overlapping != false){
-            world.player_spr.pickupWeapon(world);
-        } */
+        }
 
     });
 
@@ -467,6 +447,10 @@ function update() {
 
     CheckEnemyHP();
 
+    CheckWaveOver(this);
+
+    console.log(world.enemyAry[0].x);
+
     constrainReticle(this, world.reticle_spr); 
 
     //make reticle move with player
@@ -508,6 +492,15 @@ function CheckEnemyHP(){
     for(let enemy in world.enemyAry){
         if(world.enemyAry[enemy].hp < 1){
             console.log("Enemy dead");
+            //Random chance to drop weapon
+            if(Math.random() < 0){
+                if(Math.random() < 0.5){
+                    this.add.existing(new WepPickup.RiflePickup(this, world.enemyAry[enemy].x, world.enemyAry[enemy].y, world));
+                }else{
+                    this.add.existing(new WepPickup.PistolPickup(this, world.enemyAry[enemy].x, world.enemyAry[enemy].y, world));
+
+                }
+            }
             world.enemyAry[enemy].setActive(false).setVisible(false).destroy();
             world.enemyAry.splice(enemy, 1);
             scoring.score++;
@@ -517,11 +510,17 @@ function CheckEnemyHP(){
     }
 }
 
-function CheckEnemiesLeft(){
+function CheckWaveOver(scene){
     if(world.enemyAry.length < 1){
         scoring.wave++;
         world.curWave++;
-        LevelGenerator.spawnWave();
+        SaveStats();
+        LevelGenerator.spawnWave(scene, world);
+        //Add Enemy Colliders
+        for(let i = 0; i < world.enemyAry.length; i++){
+        scene.physics.add.collider(world.enemyAry[i], world.wallLayer);
+        scene.physics.add.collider(world.enemyAry[i], world.groundLayer);
+    }
         
     }
 }
