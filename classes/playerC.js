@@ -62,6 +62,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.setDepth(3);
         this.setOffset(8, 10);
 
+        this.playerHurt = scene.sound.add('playerhurt');
+
 
     } // end of constructor()
 
@@ -240,6 +242,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     //Decrement the player's HP
     hurtPlayer(){
         this.stats.curHP--;
+        this.playerHurt.play({volume:0.3});
     }
 
 } // end of Player class

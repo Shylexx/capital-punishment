@@ -85,6 +85,7 @@ export class Pistol extends Weapon{
         var bullet = world.player_spr.weapon.bulletGroup.get()
         if(bullet){
             bullet.fire(this, world);
+            world.shootGun.play({volume:0.3});
 
 
             //Bullet Collide with Walls
@@ -139,6 +140,7 @@ export class Rifle extends Weapon{
             var bullet = world.player_spr.weapon.bulletGroup.get()
             if(bullet){
                 bullet.fire(this, world);
+                world.shootGun.play({volume:0.3});
     
     
                 //Bullet Collide with Walls

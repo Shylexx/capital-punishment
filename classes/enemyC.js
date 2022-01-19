@@ -162,6 +162,7 @@ export class Shooter extends Enemy {
         var bullet = this.enemyBullets.get()
         if(bullet){
             bullet.fire(this.x, this.y, world.player_spr.x, world.player_spr.y);
+            world.enemyShot.play({volume:0.3});
 
             //Bullet Collide with Player
             scene.physics.add.overlap(bullet, world.player_spr, world.player_spr.hurtPlayer, null, world.player_spr);

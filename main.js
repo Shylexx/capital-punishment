@@ -42,6 +42,11 @@ let world = {
     wallAry: null,
 
     enemiesLeft: null,
+
+    music:null,
+    shootGun: null,
+    enemyShot: null,
+    enemyDie: null,
 }; // end of world
 
 let scoring = {
@@ -166,6 +171,7 @@ function CheckEnemyHP(scene){
                 }
                 enemy.disableBody(true, true);
                 enemy.alive = false;
+                world.enemyDie.play({volume:0.3});
                 scoring.score++;
             }
         }
@@ -271,10 +277,48 @@ function preload() {
         textureURL: 'assets/enemies/witch.png',
         atlasURL: 'assets/enemies/witch.json'
     });
+    
+    //Load Audio
+
+    //Load Music
+    this.load.audio('music', [
+        'assets/sound/music/ancient_ruins.ogg',
+        'assets/sound/music/ancient_ruins.mp3'
+    ]);
+
+    this.load.audio('enemydie', [
+        'assets/sound/sfx/enemydie.ogg',
+        'assets/sound/sfx/enemydie.mp3'
+    ]);
+
+    this.load.audio('shoot', [
+        'assets/sound/sfx/playershot.ogg',
+        'assets/sound/sfx/playershot.mp3'
+    ]);
+
+    this.load.audio('enemyshot', [
+        'assets/sound/sfx/enemyshot.ogg',
+        'assets/sound/sfx/enemyshot.mp3'
+    ]);
+
+    this.load.audio('playerhurt', [
+        'assets/sound/sfx/playerhurt.ogg',
+        'assets/sound/sfx/playerhurt.mp3'
+    ]);
+
 
 } //end of preload()
 
 function create() {
+
+    //Play Music
+    world.music = this.sound.add('music');
+    world.music.play({volume:0.1, loop: true});
+
+    world.enemyDie = this.sound.add('enemydie');
+    world.enemyShot = this.sound.add('enemyshot');
+    world.shootGun = this.sound.add('shoot');
+
 
     //Add Keys for Input
     world.moveKeys = this.input.keyboard.addKeys('W,A,S,D,E');
