@@ -19,7 +19,7 @@ export class WeaponPickup extends Phaser.Physics.Arcade.Sprite{
 
     //Tell player sprite which pickup they are currently overlapping
     overlapPlayer(){
-         if (this.world.player_spr.overlapping != this){
+         if (this.world.player_spr.overlapping != this) {
         this.world.player_spr.overlapping = this;
         } 
     }
